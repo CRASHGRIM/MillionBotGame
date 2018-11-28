@@ -1,5 +1,9 @@
 public class Main {
     public static void main(String[] args) {
-        System.out.println("test");
+
+        InputProcessor inputProcessor = new InputProcessor();
+        ConsoleInput consoleInput = new ConsoleInput(inputProcessor);
+        inputProcessor.start();
+        consoleInput.start();
     }
 }
