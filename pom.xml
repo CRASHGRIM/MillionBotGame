@@ -32,5 +32,10 @@
             <artifactId>vk-bot-java-sdk</artifactId>
             <version>0.1.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>4.1</version>
+        </dependency>
     </dependencies>
 </project>

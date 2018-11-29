@@ -3,6 +3,7 @@ import java.util.ArrayDeque;
 public class IOMultiplatformProcessor extends Thread {
     private ArrayDeque<Request> bufer = new ArrayDeque<Request>();
 //    private VkIO vkIO = new VkIO(this);
+    private TelegramIO telegramIO= new TelegramIO();
     private ConsoleIO consoleIO = new ConsoleIO(this);
 
     public IOMultiplatformProcessor() {
@@ -30,6 +31,7 @@ public class IOMultiplatformProcessor extends Thread {
                 break;
             case TELEGRAM:
                 //ToDo сюда интегрируй телеграм по аналогии с вк
+//                telegramIO.sendMsg(message, user.getId());
                 throw new UnsupportedOperationException();
         }
     }
