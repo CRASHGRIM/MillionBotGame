@@ -2,14 +2,14 @@ import lombok.Getter;
 import lombok.ToString;
 
 @ToString
-public class Request {
-    public Request(Integer userId, String request) {
-        this.userId = userId;
+class Request {
+    Request(User user, String request) {
+        this.user = user;
         this.request = request;
     }
 
     @Getter
-    Integer userId;
+    User user;
     @Getter
     String request;
 }
