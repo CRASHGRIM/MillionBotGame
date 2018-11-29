@@ -17,7 +17,7 @@ import org.telegram.telegrambots.ApiContextInitializer;
         import java.util.Stack;
 
 
-public class TelegramIO extends TelegramLongPollingBot{
+public class TelegramIO extends TelegramLongPollingBot implements Runnable{
 
     IOMultiplatformProcessor IOMultiplatformProcessor;
     private final User.Platform platform = User.Platform.TELEGRAM;
@@ -25,6 +25,18 @@ public class TelegramIO extends TelegramLongPollingBot{
     TelegramIO(IOMultiplatformProcessor IOMultiplatformProcessor)
     {
         this.IOMultiplatformProcessor = IOMultiplatformProcessor;
+        //ApiContextInitializer.init(); // Инициализируем api
+        //TelegramBotsApi telegramBotApi = new TelegramBotsApi();
+        //try {
+        //    telegramBotApi.registerBot(this);
+        //} catch (TelegramApiException e) {
+        //    e.printStackTrace();
+        //}
+        //System.out.println("Working");
+    }
+
+    public void run()
+    {
         ApiContextInitializer.init(); // Инициализируем api
         TelegramBotsApi telegramBotApi = new TelegramBotsApi();
         try {
@@ -32,17 +44,16 @@ public class TelegramIO extends TelegramLongPollingBot{
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-
         System.out.println("Working");
     }
+
 
     @Override
     public void onUpdateReceived(Update update) {
         int userID = update.getMessage().getFrom().getId();
         Message message = update.getMessage();
-        String chatId = message.getChatId().toString();
         System.out.println(message.getText());
-        IOMultiplatformProcessor.sendRequest(new Request(new User(platform, userID), message.getText());
+        IOMultiplatformProcessor.sendRequest(new Request(new User(platform, userID), message.getText()));
 
     }
 

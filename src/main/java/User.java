@@ -12,6 +12,14 @@ public class User {
         this.platform = platform;
         this.id = id;
     }
+    public Platform getPlatform()
+    {
+        return platform;
+    }
+    public Integer getId()
+    {
+        return id;
+    }
 
     enum Platform{CONSOLE, VK, TELEGRAM}
 }

@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class ConsoleIO extends Thread {
+public class ConsoleIO implements Runnable {
 
     IOMultiplatformProcessor IOMultiplatformProcessor;
 
