@@ -4,8 +4,8 @@ import com.petersamokhin.bots.sdk.objects.Message;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class VkIO {
-    private static Group group = new Group(Config.GROUD_ID, readToken());
+class VkIO {
+    private static Group group = new Group(Config.VK_GROUD_ID, readToken());
     private final User.Platform platform = User.Platform.VK;
 
     private IOMultiplatformProcessor IOMultiplatformProcessor;
@@ -14,11 +14,11 @@ public class VkIO {
         this.IOMultiplatformProcessor = IOMultiplatformProcessor;
 
         group.onSimpleTextMessage(message ->
-                this.IOMultiplatformProcessor.sendRequest(new Request(new User(platform, message.authorId()), message.getText()))
+                this.IOMultiplatformProcessor.pushRequest(new Request(new User(platform, message.authorId()), message.getText()))
         );
     }
 
-    public void sendMessage(int id, String message) {
+    void sendMessage(int id, String message) {
         new Message()
                 .from(group)
                 .to(id)

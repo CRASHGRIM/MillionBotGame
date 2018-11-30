@@ -3,13 +3,13 @@ import lombok.ToString;
 
 @ToString
 class Request {
-    Request(User user, String request) {
+    Request(User user, String message) {
         this.user = user;
-        this.request = request;
+        this.message = message;
     }
 
     @Getter
-    User user;
+    private User user;
     @Getter
-    String request;
+    private String message;
 }

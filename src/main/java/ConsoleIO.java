@@ -1,21 +1,21 @@
 import java.util.Scanner;
 
-public class ConsoleIO implements Runnable {
+public class ConsoleIO extends Thread {
 
-    IOMultiplatformProcessor IOMultiplatformProcessor;
+    private IOMultiplatformProcessor IOMultiplatformProcessor;
 
-    public ConsoleIO(IOMultiplatformProcessor IOMultiplatformProcessor) {
+    ConsoleIO(IOMultiplatformProcessor IOMultiplatformProcessor) {
         this.IOMultiplatformProcessor = IOMultiplatformProcessor;
     }
 
     public void run() {
         while (true) {
             Scanner sc = new Scanner(System.in);
-            IOMultiplatformProcessor.sendRequest(new Request(new User(User.Platform.CONSOLE, 0), sc.nextLine()));
+            IOMultiplatformProcessor.pushRequest(new Request(new User(User.Platform.CONSOLE, 0), sc.nextLine()));
         }
     }
 
-    public void sendMes(String message) {
+    void sendMes(String message) {
         System.out.println(message);
     }
 }
