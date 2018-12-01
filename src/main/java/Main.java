@@ -1,10 +1,19 @@
+import java.util.ArrayList;
+
 public class Main {
+
     public static void main(String[] args) {
         IOMultiplatformProcessor ioMultiplatformProcessor = new IOMultiplatformProcessor();
 
+        ArrayList<User> arr = new ArrayList<User>();// здесь говнокод потом уберу наверное если не забуду
+        arr.add(new User(User.Platform.CONSOLE, 0));
+        GameFortune game = new GameFortune(arr, ioMultiplatformProcessor);
+        game.start();
+
         while (true) {
             if (ioMultiplatformProcessor.isHasUnprocessedRequests()) {
-                ioMultiplatformProcessor.sendMes(ioMultiplatformProcessor.pollRequest());
+                game.next(ioMultiplatformProcessor.pollRequest());// надо сделать какой то флаг того что игра завершилась
+                //ioMultiplatformProcessor.sendMes(ioMultiplatformProcessor.pollRequest());
             }
             try {
                 Thread.sleep(1000);

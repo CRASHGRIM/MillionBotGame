@@ -3,6 +3,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IOMultiplatformProcessor {
     private ArrayDeque<Request> bufer = new ArrayDeque<Request>();
@@ -40,7 +42,8 @@ public class IOMultiplatformProcessor {
         return !bufer.isEmpty();
     }
 
-    Request pollRequest() {
+    Request pollRequest()
+    {
         return bufer.poll();
     }
 
