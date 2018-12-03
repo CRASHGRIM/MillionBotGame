@@ -6,7 +6,9 @@ public class Main {
         IOMultiplatformProcessor ioMultiplatformProcessor = new IOMultiplatformProcessor();
 
         ArrayList<User> arr = new ArrayList<User>();// здесь говнокод потом уберу наверное если не забуду
-        arr.add(new User(User.Platform.CONSOLE, 0));
+        //arr.add(new User(User.Platform.CONSOLE, 0));
+        arr.add(new User(User.Platform.TELEGRAM, 596865644));
+        arr.add(new User(User.Platform.VK, 83229217));
         GameFortune game = new GameFortune(arr, ioMultiplatformProcessor);
         game.start();
 

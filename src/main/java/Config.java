@@ -3,6 +3,6 @@ public class Config {
     static final String FILE_NAME_VK_TOKEN = "VK_TOKEN";
 
     static final boolean IS_CONSOLE_RUN = true;
-    static final boolean IS_VK_RUN = false;
-    static final boolean IS_TG_RUN = false;
+    static final boolean IS_VK_RUN = true;
+    static final boolean IS_TG_RUN = true;
 }

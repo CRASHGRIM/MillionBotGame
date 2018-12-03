@@ -1,6 +1,7 @@
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GameFortune {
@@ -9,8 +10,7 @@ public class GameFortune {
     private int activePlayerIndex;
     private ArrayList<User> players;
     @Getter
-    private String question;
-    private String rightWord;
+    private Question question2;
     @Getter
     private StringBuilder currentWord;
     @Getter
@@ -20,31 +20,33 @@ public class GameFortune {
     private Random rnd;
     private Integer currentWheelSectorIndex;
     private TechnicalCommands techComm;
+    private List<Question> questionList;
 
     GameFortune(ArrayList<User> players, IOMultiplatformProcessor processor){
         this.players = players;
         this.processor = processor;
+        this.questionList = new Parser("C:\\Users\\danii\\IdeaProjects\\MillionBotGame\\src\\main\\java\\Questions.txt").toListQuestions();//хз почему но relative path не работает пофикси плез
+        this.rnd = new Random();
+        question2 = questionList.get(rnd.nextInt(questionList.size()));
         activePlayer = this.players.get(0);
         activePlayerIndex = 0;
         activePlayerAnswerStatus = answerStatus.OTHER;
-        question = "4 колеса, руль";// здесь потом сделаем подгрузку из какого нибудь словаря
-        rightWord = "машина";
         currentWord = new StringBuilder();
-        for(int i = 0; i<rightWord.length(); i++)// здесь возможно как то покрасивее можно сделать
-            currentWord.append("*");
+        for(int i = 0; i<question2.getAnswer().length(); i++)// здесь возможно как то покрасивее можно сделать
+            currentWord.append("-");
         wheel = new ArrayList<Integer>();
         wheel.add(100);
         wheel.add(50);
         wheel.add(0);// это надо сделать покрасивее (возможно сделаю словарь лямбд)
-        rnd = new Random();
         techComm = new TechnicalCommands(this);
+
     }
 
     public void start()
     {
         sendAll("добро пожаловать на капиталшоу поле чудес!!!");
         sendAll("вот задание:");
-        sendAll(question);
+        sendAll(question2.getQuestion());
         sendAll(currentWord.toString());
         sendAll(activePlayer.getId().toString()+" начинает игру!!!");
         sendAll("чтобы назвать букву скажите буква, чтобы назвать слово скажите слово");
@@ -70,8 +72,9 @@ public class GameFortune {
                 processor.sendMes(new Request(request.getUser(), "команда отсутствует"));
             return;
         }
-        if (request.getUser().getId() != activePlayer.getId())
+        if (!request.getUser().getId().toString().equals(activePlayer.getId().toString())) {
             return;
+        }
         switch (activePlayerAnswerStatus) {
             case LETTER:
                 if (answer.length()>1) {
@@ -83,30 +86,34 @@ public class GameFortune {
                     processor.sendMes(new Request(activePlayer, "а такая буква уже была"));
                     break;
                 }
-                if (rightWord.contains(answer))
+                if (question2.getAnswer().contains(answer))
                 {
                     processor.sendMes(new Request(activePlayer, "да, вы угадали букву"));
+                    sendAll(activePlayer.getId().toString()+" угадывает букву "+answer);
                     activePlayer.scorePoints(wheel.get(currentWheelSectorIndex));
                     for (int i = 0; i<currentWord.length(); i++)
-                        if (rightWord.charAt(i) == answer.charAt(0))
+                        if (question2.getAnswer().charAt(i) == answer.charAt(0))
                             currentWord.replace(i, i+1, answer);
-                    processor.sendMes(new Request(activePlayer, currentWord.toString()));
-                    if (currentWord.indexOf("*")==-1)
+                    sendAll(currentWord.toString());
+                    if (currentWord.toString().equals(question2.getAnswer()))
                         win();
                     activePlayerAnswerStatus = answerStatus.OTHER;
                     break;
                 }
                 processor.sendMes(new Request(activePlayer, "а такой буквы тут нет"));
+                sendAll(activePlayer.getId().toString() + "назвал букву "+answer+" и не угадал");
                 nextPlayer();
                 break;
             case WORD:
-                if (answer.equals(rightWord))
+                if (answer.equals(question2.getAnswer()))
                 {
                     processor.sendMes(new Request(activePlayer, "да, вы угадали слово"));
+                    sendAll(activePlayer.getId().toString() + " угадал слово " + question2.getAnswer());
                     win();
                 }
                 else {
                     processor.sendMes(new Request(activePlayer, "нет, это не то слово"));
+                    sendAll(activePlayer.getId().toString() + " не угадал слово");
                     nextPlayer();
                 }
                 break;
@@ -140,21 +147,21 @@ public class GameFortune {
 
     private void win()
     {
-        sendAll(activePlayer.getId().toString()+"выиграл!!!");// и вот здесь надо как то сказать main что типа игра закончилась (мы с лехой делали флаги которые отсылаются в обработчик)
+        sendAll(activePlayer.getId().toString()+" выиграл!!!");// и вот здесь надо как то сказать main что типа игра закончилась (мы с лехой делали флаги которые отсылаются в обработчик)
     }
 
     private void wheelRoll()
     {
         sendAll("Вращаем барабан...");
         currentWheelSectorIndex = rnd.nextInt(wheel.size());
-        if (wheel.get(currentWheelSectorIndex)==0) {
-            sendAll("упс да у вас 0 очков ходит следующий игрок");
-            nextPlayer();
-        }
-        else
-        {
+        //if (wheel.get(currentWheelSectorIndex)==0) {
+        //    sendAll("упс да у вас 0 очков ходит следующий игрок");
+        //    nextPlayer();
+        //}
+        //else
+        //{
             sendAll(wheel.get(currentWheelSectorIndex).toString() + "на барабане");
-        }
+        //}
 
 
     }
