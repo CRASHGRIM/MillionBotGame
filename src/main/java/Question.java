@@ -5,11 +5,10 @@ public class Question {
     @Getter
     private String question;
     @Getter
-    @Setter
     private String answer;
 
-    Question(String question)
-    {
+    Question(String question, String answer) {
         this.question = question;
+        this.answer = answer;
     }
 }

@@ -7,25 +7,21 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TelegramIO extends TelegramLongPollingBot {
 
-    private String BOT_NAME = "USER";
-    private String BOT_TOKEN = "578074240:AAEzKIim6j6yusyvsufNS41Z3_G6-a7TvPU";
-    private IOMultiplatformProcessor MultiplatformProcessor;
+    private IOMultiplatformProcessor ioMultiplatformProcessor;
 
-
-    public TelegramIO(IOMultiplatformProcessor processor) {
+    TelegramIO(IOMultiplatformProcessor processor) {
         super();
-        MultiplatformProcessor = processor;
+        ioMultiplatformProcessor = processor;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         int userID = update.getMessage().getFrom().getId();
         Message message = update.getMessage();
-        long chatId = message.getChatId();
-        MultiplatformProcessor.pushRequest(new Request(new User(User.Platform.TELEGRAM, userID), message.getText()));
+        ioMultiplatformProcessor.pushRequest(new Request(new User(User.Platform.TELEGRAM, userID), message.getText()));
     }
 
-    public void sendMsg(String s, long chatID) {
+    void sendMsg(String s, long chatID) {
         try {
             execute(new SendMessage().setChatId(chatID).setText(s).enableMarkdown(true));
         } catch (TelegramApiException e) {
@@ -35,12 +31,12 @@ public class TelegramIO extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return BOT_NAME;
+        return Config.TELEGRAM_BOT_NAME;
     }
 
     @Override
     public String getBotToken() {
-        return BOT_TOKEN;
+        return FileUtils.readToken(Config.FILE_NAME_TG_TOKEN);
     }
 
 

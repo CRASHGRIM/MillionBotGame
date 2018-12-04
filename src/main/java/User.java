@@ -16,10 +16,9 @@ class User {
         this.score = 0;
     }
 
-    public void scorePoints(Integer points)
-    {
-        score+=points;
+    void addScore(Integer points) {
+        score += points;
     }
 
-    enum Platform{CONSOLE, VK, TELEGRAM}
+    enum Platform {CONSOLE, VK, TELEGRAM}
 }

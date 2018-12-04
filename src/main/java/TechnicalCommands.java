@@ -9,16 +9,11 @@ public class TechnicalCommands {
     public Map<String, Operation> listOfCommands = new HashMap<>();
 
     public TechnicalCommands(GameFortune game) {
-        listOfCommands.put("!help", (User player) -> game.getProcessor().sendMes(new Request(player, help())));
-        listOfCommands.put("!score", (User player) -> game.getProcessor().sendMes(new Request(player, player.getScore().toString())));
-        listOfCommands.put("!question", (User player) -> game.getProcessor().sendMes(new Request(player, game.getQuestion2().getQuestion())));
-        listOfCommands.put("!currentWord", (User player) -> game.getProcessor().sendMes(new Request(player, game.getCurrentWord().toString())));
+        listOfCommands.put("!help", (User player) -> game.getIOprocessor().sendMes(new Request(player, help())));
+        listOfCommands.put("!score", (User player) -> game.getIOprocessor().sendMes(new Request(player, player.getScore().toString())));
+        listOfCommands.put("!question", (User player) -> game.getIOprocessor().sendMes(new Request(player, game.getQuestion().getQuestion())));
+        listOfCommands.put("!currentWord", (User player) -> game.getIOprocessor().sendMes(new Request(player, game.getCurrentWord().toString())));
 }
-
-    private void print(String string){
-        System.out.println(string);
-    }
-
 
     private String help() {
         return "Вы играете в игру поле чудес" +
