@@ -1,10 +1,9 @@
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.xml.sax.SAXException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.io.IOException;
+import java.util.*;
 
 public class GameFortune {
 
@@ -25,6 +24,7 @@ public class GameFortune {
     private List<Question> questionList;
     @Getter
     private boolean isGameFinished = false;
+    private Map<String, ArrayList<String>> phrases;
 
     GameFortune(ArrayList<User> players, IOMultiplatformProcessor ioProcessor) {
         this.players = players;
@@ -39,15 +39,21 @@ public class GameFortune {
         currentWord.append(StringUtils.repeat("-", question.getAnswer().length()));
         wheel = Arrays.asList(100, 50, 0); //List не исменяемый. Чтобы что то поменять, нужно переделать в ArrayList
         techComm = new TechnicalCommands(this);
+        try {
+            phrases = XMLParcer.parse("src/main/texts/TestMy.xml");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     void start() {
-        sendAll("Добро пожаловать на капиталшоу поле чудес!!!");
-        sendAll("Вот задание:");
+        sendAll(getPhrase("GREETINGS_START_GAME"));
+        sendAll(getPhrase("TASK_IS:"));
         sendAll(question.getQuestion());
         sendAll(currentWord.toString());
-        sendAll(activePlayer.getId().toString() + " начинает игру!!!");
-        IOprocessor.sendMes(new Request(activePlayer, "Чтобы назвать букву скажите \"буква\", чтобы назвать слово скажите \"слово\""));
+        sendAll(activePlayer.getId().toString() + getPhrase("PLAYER_BEGINS_THE_ROUND"));
+        IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
     }
 
     private void sendAll(String message) {
@@ -75,16 +81,16 @@ public class GameFortune {
         switch (activePlayerAnswerStatus) {
             case LETTER:
                 if (userMessage.length() > 1) {
-                    IOprocessor.sendMes(new Request(activePlayer, "Кажется, у вас не буква"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("NOT_A_LETTER")));
                     break;
                 }
                 if (currentWord.indexOf(userMessage) != -1) {
-                    IOprocessor.sendMes(new Request(activePlayer, "А такая буква уже была"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_THAT_ALREADY_WAS")));
                     break;
                 }
                 if (question.getAnswer().toLowerCase().contains(userMessage.toLowerCase())) {
-                    IOprocessor.sendMes(new Request(activePlayer, "Да, вы угадали букву"));
-                    IOprocessor.sendMes(new Request(activePlayer, "скажите \"буква\", чтобы назвать слово скажите \"слово\""));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_A_LETTER_FOR_PLAYER")));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
                     sendAll(activePlayer.getId().toString() + " угадывает букву " + userMessage);
                     activePlayer.addScore(wheel.get(currentWheelSectorIndex));
                     for (int i = 0; i < currentWord.length(); i++)
@@ -102,11 +108,11 @@ public class GameFortune {
                 break;
             case WORD:
                 if (userMessage.toLowerCase().equals(question.getAnswer().toLowerCase())) {
-                    IOprocessor.sendMes(new Request(activePlayer, "Да, вы угадали слово"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_RIGHT_WORD")));
                     sendAll(activePlayer.getId().toString() + " угадал слово \"" + question.getAnswer() + "\"");
                     win();
                 } else {
-                    IOprocessor.sendMes(new Request(activePlayer, "Нет, это не то слово"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_WORD")));
                     sendAll(activePlayer.getId().toString() + " не угадал слово");
                     nextPlayer();
                 }
@@ -114,12 +120,12 @@ public class GameFortune {
             case OTHER:
                 if (userMessage.toLowerCase().equals("буква")) {
                     wheelRoll();
-                    IOprocessor.sendMes(new Request(activePlayer, "Называйте букву"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_LETTER")));
                     activePlayerAnswerStatus = answerStatus.LETTER;
                     break;
                 }
                 if (userMessage.toLowerCase().equals("слово")) {
-                    IOprocessor.sendMes(new Request(activePlayer, "Называйте слово"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_WORD")));
                     activePlayerAnswerStatus = answerStatus.WORD;
                     break;
                 }
@@ -135,7 +141,7 @@ public class GameFortune {
         activePlayer = players.get(activePlayerIndex);
         activePlayerAnswerStatus = answerStatus.OTHER;
         sendAll("В игру вступает " + activePlayer.getId().toString());
-        IOprocessor.sendMes(new Request(activePlayer, "Чтобы назвать букву скажите \"буква\", чтобы назвать слово скажите \"слово\""));
+        IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
     }
 
     private void win() {
@@ -144,9 +150,20 @@ public class GameFortune {
     }
 
     private void wheelRoll() {
-        sendAll("Вращаем барабан...");
+        sendAll(getPhrase("ROLL"));
         currentWheelSectorIndex = rnd.nextInt(wheel.size());
         sendAll(wheel.get(currentWheelSectorIndex).toString() + " на барабане");
+    }
+
+    private String getPhrase(String situation)
+    {
+        try {
+            return phrases.get(situation).get(rnd.nextInt(phrases.get(situation).size()));
+        }
+        catch (Exception e)
+        {
+            return situation;
+        }
     }
 
     enum answerStatus {LETTER, WORD, OTHER}

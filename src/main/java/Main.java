@@ -9,7 +9,7 @@ public class Main {
         users.add(new User(User.Platform.CONSOLE, 0));
 //        users.add(new User(User.Platform.TELEGRAM, 596865644));
 //        users.add(new User(User.Platform.VK, 83229217));
-        users.add(new User(User.Platform.VK, 251093754));
+//        users.add(new User(User.Platform.VK, 251093754));
         GameFortune game = new GameFortune(users, ioMultiplatformProcessor);
         game.start();
 

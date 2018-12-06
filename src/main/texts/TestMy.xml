@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MillionGamePhrases>
+    <name>MillionGamePhrases_Russian</name>
+    <Situations>
+        <Situation name="GREETINGS_START_GAME">
+            <phrase text="Добро пожаловать на капиталшоу поле чудес!!!" />
+        </Situation>
+        <Situation name="TASK_IS:">
+            <phrase text="Вот задание:" />
+            <phrase text="А вот и задание:" />
+        </Situation>
+        <Situation name="PLAYER_BEGINS_THE_ROUND">
+            <phrase text=" начинает игру!" />
+            <phrase text=" вступает в игру!" />
+            <phrase text=" ходите!" />
+        </Situation>
+        <Situation name="GAME_RULES">
+            <phrase text="Чтобы назвать букву скажите буква, чтобы назвать слово скажите слово" />
+        </Situation>
+        <Situation name="NOT_A_LETTER">
+            <phrase text="кажется у вас не буква" />
+            <phrase text="да вы букву называйте а не слово" />
+            <phrase text="я же просил букву назвать" />
+        </Situation>
+        <Situation name="LETTER_THAT_ALREADY_WAS">
+            <phrase text="а такая буква уже была" />
+            <phrase text="вы что забыли? Такую букву уже называли" />
+        </Situation>
+        <Situation name="GUESSING_A_LETTER_FOR_PLAYER">
+            <phrase text="откройте ее сейчас же" />
+            <phrase text="да, вы угадали" />
+            <phrase text="правильно!!!" />
+        </Situation>
+        <Situation name="GUESSING_RIGHT_WORD">
+            <phrase text="да, вы угадали слово" />
+            <phrase text="правильно" />
+        </Situation>
+        <Situation name="GUESSING_WRONG_WORD">
+            <phrase text="а вы не угадали" />
+            <phrase text="а это не то слово" />
+        </Situation>
+        <Situation name="NAME_A_LETTER">
+            <phrase text="называйте букву" />
+            <phrase text="ну буква дак буква" />
+        </Situation>
+        <Situation name="NAME_A_WORD">
+            <phrase text="называйте слово" />
+            <phrase text="ну слово дак слово" />
+        </Situation>
+        <Situation name="ROLL">
+            <phrase text="вращайте барабан..." />
+        </Situation>
+    </Situations>
+</MillionGamePhrases>
