@@ -48,15 +48,15 @@ public class GameFortune {
     void generateWheel()
     {
         this.wheel = new ArrayList<wheelSector>();
-        for (int i=0;i<10;i++) {
-            wheel.add(wheelSector.POINTS);
-        }
-        for (int i=0;i<2;i++) {
-            wheel.add(wheelSector.ZERO);
-        }
-        //wheel.add(wheelSector.OPENLETTER);
+        //for (int i=0;i<10;i++) {
+        //    wheel.add(wheelSector.POINTS);
+        //}
+        //for (int i=0;i<2;i++) {
+        //    wheel.add(wheelSector.ZERO);
+        //}
+        wheel.add(wheelSector.OPENLETTER);
         //wheel.add(wheelSector.PRIZE);
-        wheel.add(wheelSector.BANKRUPT);
+        //wheel.add(wheelSector.BANKRUPT);
     }
 
     void start() {
@@ -149,7 +149,33 @@ public class GameFortune {
                 sendAll("что то я вас не понял");
                 break;
             case LETTEROPENING:
-                sendAll("player opens letter");// здесь нужно проверить что это цифра и открыть эту букву
+                int letterIndex = 0;
+                try
+                {
+                    letterIndex = Integer.parseInt(userMessage);
+                    letterIndex--;
+                }
+                catch (NumberFormatException e)
+                {
+                    IOprocessor.sendMes(new Request(activePlayer, "да вы номер буквы скажите"));
+                    break;
+                }
+                if (letterIndex>=currentWord.length()) {// здесь возможно >
+                    IOprocessor.sendMes(new Request(activePlayer, "слишком большой номер"));
+                    break;
+                }
+                if (currentWord.charAt(letterIndex)=='-')
+                {
+                    for (int i = 0; i < currentWord.length(); i++)
+                        if (question.getAnswer().charAt(i) == question.getAnswer().charAt(letterIndex))
+                            currentWord.replace(i, i + 1, Character.toString(question.getAnswer().charAt(letterIndex)));
+                    sendAll(currentWord.toString());
+                    if (currentWord.toString().toLowerCase().equals(question.getAnswer().toLowerCase()))
+                        win();
+                    activePlayerAnswerStatus = answerStatus.OTHER;
+                    break;
+                }
+                IOprocessor.sendMes(new Request(activePlayer, "да эта буква уже открыта, вы другую выбирайте"));
                 break;
             case OTHER:
                 if (userMessage.toLowerCase().equals("буква")) {
@@ -198,6 +224,7 @@ public class GameFortune {
                 activePlayerAnswerStatus = answerStatus.PRIZE;
                 break;
             case OPENLETTER:
+                sendAll("сектор плюс на барабане");
                 sendAll("скажите номер буквы которую хотите открыть");
                 activePlayerAnswerStatus = answerStatus.LETTEROPENING;
                 break;
