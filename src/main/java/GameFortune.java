@@ -73,7 +73,6 @@ public class GameFortune {
                 IOprocessor.sendMes(new Request(request.getUser(), "команда отсутствует"));
             return;
         }
-
         if (!request.getUser().getId().toString().equals(activePlayer.getId().toString())) {
             return;
         }
@@ -91,7 +90,8 @@ public class GameFortune {
                 if (question.getAnswer().toLowerCase().contains(userMessage.toLowerCase())) {
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_A_LETTER_FOR_PLAYER")));
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
-                    sendAll(activePlayer.getId().toString() + " угадывает букву " + userMessage);
+                    //sendAll(activePlayer.getId().toString() + " угадывает букву " + userMessage);
+                    sendAll(String.format(getPhrase("GUESSING_A_LETTER_FOR_ALL"), activePlayer.getId().toString(), userMessage));
                     activePlayer.addScore(wheel.get(currentWheelSectorIndex));
                     for (int i = 0; i < currentWord.length(); i++)
                         if (question.getAnswer().charAt(i) == userMessage.charAt(0))
@@ -102,18 +102,18 @@ public class GameFortune {
                     activePlayerAnswerStatus = answerStatus.OTHER;
                     break;
                 }
-                IOprocessor.sendMes(new Request(activePlayer, "А такой буквы тут нет"));
-                sendAll(activePlayer.getId().toString() + " назвал букву " + userMessage + " и не угадал");
+                IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_LETTER_FOR_PLAYER")));
+                sendAll(String.format(getPhrase("GUESSING_WRONG_LETTER_FOR_ALL"), activePlayer.getId().toString(), userMessage));
                 nextPlayer();
                 break;
             case WORD:
                 if (userMessage.toLowerCase().equals(question.getAnswer().toLowerCase())) {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_RIGHT_WORD")));
-                    sendAll(activePlayer.getId().toString() + " угадал слово \"" + question.getAnswer() + "\"");
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_RIGHT_WORD_FOR_PLAYER")));
+                    sendAll(String.format(getPhrase("GUESSING_RIGHT_WORD_FOR_ALL"), activePlayer.getId().toString(), question.getAnswer()));
                     win();
                 } else {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_WORD")));
-                    sendAll(activePlayer.getId().toString() + " не угадал слово");
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_WORD_FOR_PLAYER")));
+                    sendAll(String.format(getPhrase("GUESSING_WRONG_WORD_FOR_ALL"), activePlayer.getId().toString(), userMessage));
                     nextPlayer();
                 }
                 break;
@@ -129,7 +129,7 @@ public class GameFortune {
                     activePlayerAnswerStatus = answerStatus.WORD;
                     break;
                 }
-                IOprocessor.sendMes(new Request(activePlayer, "Скажите \"буква\" или \"слово\""));
+                IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
                 break;
 
 
@@ -145,14 +145,15 @@ public class GameFortune {
     }
 
     private void win() {
-        sendAll(activePlayer.getId().toString() + " выиграл!!!");// и вот здесь надо как то сказать main что типа игра закончилась (мы с лехой делали флаги которые отсылаются в обработчик)
+        IOprocessor.sendMes(new Request(activePlayer, getPhrase("VICTORY_FOR_PLAYER")));
+        sendAll(String.format(getPhrase("VICTORY_FOR_ALL"), activePlayer.getId().toString()));
         isGameFinished = true;
     }
 
     private void wheelRoll() {
         sendAll(getPhrase("ROLL"));
         currentWheelSectorIndex = rnd.nextInt(wheel.size());
-        sendAll(wheel.get(currentWheelSectorIndex).toString() + " на барабане");
+        sendAll(String.format(getPhrase("WHEEL_SECTOR"), wheel.get(currentWheelSectorIndex).toString()));
     }
 
     private String getPhrase(String situation)

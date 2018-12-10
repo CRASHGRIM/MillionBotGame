@@ -45,20 +45,20 @@ public class IOMultiplatformProcessor {
     }
 
     void sendMes(Request request) {
-        User user = request.getUser();
+        //User user = request.getUser();
         String message = request.getMessage();
-        switch (user.getPlatform()) {
+        switch (request.getPlatform()) {
             case CONSOLE:
                 if (Config.IS_CONSOLE_RUN)
                     consoleIO.sendMes(message);
                 break;
             case VK:
                 if (Config.IS_VK_RUN)
-                    vkIO.sendMessage(user.getId(), message);
+                    vkIO.sendMessage(request.getUserID(), message);
                 break;
             case TELEGRAM:
                 if (Config.IS_TG_RUN)
-                    telegramIO.sendMsg(message, user.getId());
+                    telegramIO.sendMsg(message, request.getUserID());
         }
     }
 }

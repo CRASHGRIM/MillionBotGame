@@ -31,13 +31,31 @@
             <phrase text="да, вы угадали" />
             <phrase text="правильно!!!" />
         </Situation>
-        <Situation name="GUESSING_RIGHT_WORD">
+        <Situation name="GUESSING_A_LETTER_FOR_ALL">
+            <phrase text="%1$s угадал букву %2$s" />
+            <phrase text="откройте букву %2$s для игрока %1$s" />
+        </Situation>
+        <Situation name="GUESSING_WRONG_LETTER_FOR_PLAYER">
+            <phrase text="а такой буквы тут нет" />
+            <phrase text="я бы открыл если бы она была" />
+        </Situation>
+        <Situation name="GUESSING_WRONG_LETTER_FOR_ALL">
+            <phrase text="%1$s называет букву %2$s и не угадывает" />
+        </Situation>
+        <Situation name="GUESSING_RIGHT_WORD_FOR_PLAYER">
             <phrase text="да, вы угадали слово" />
             <phrase text="правильно" />
         </Situation>
-        <Situation name="GUESSING_WRONG_WORD">
+        <Situation name="GUESSING_WRONG_WORD_FOR_PLAYER">
             <phrase text="а вы не угадали" />
             <phrase text="а это не то слово" />
+        </Situation>
+        <Situation name="GUESSING_RIGHT_WORD_FOR_ALL">
+            <phrase text="%1$s угадывает слово %2$s" />
+            <phrase text="%1$s называет слово %2$s и угадывает" />
+        </Situation>
+        <Situation name="GUESSING_WRONG_WORD_FOR_ALL">
+            <phrase text="%1$s называет слово %2$s и не угадывает" />
         </Situation>
         <Situation name="NAME_A_LETTER">
             <phrase text="называйте букву" />
@@ -47,8 +65,19 @@
             <phrase text="называйте слово" />
             <phrase text="ну слово дак слово" />
         </Situation>
+        <Situation name="VICTORY_FOR_PLAYER">
+            <phrase text="вы выиграли!!!" />
+            <phrase text="это победа!!!" />
+        </Situation>
+        <Situation name="VICTORY_FOR_ALL">
+            <phrase text="%1$s выиграл!!!" />
+        </Situation>
         <Situation name="ROLL">
             <phrase text="вращайте барабан..." />
+        </Situation>
+        <Situation name="WHEEL_SECTOR">
+            <phrase text="%1$s на барабане" />
+            <phrase text="у вас %1$s" />
         </Situation>
     </Situations>
 </MillionGamePhrases>

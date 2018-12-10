@@ -11,6 +11,7 @@ public class ConsoleIO extends Thread {
     public void run() {
         while (true) {
             Scanner sc = new Scanner(System.in);
+            //IOMultiplatformProcessor.pushRequest(new Request(0, User.Platform.CONSOLE, sc.nextLine()));
             IOMultiplatformProcessor.pushRequest(new Request(new User(User.Platform.CONSOLE, 0), sc.nextLine()));
         }
     }

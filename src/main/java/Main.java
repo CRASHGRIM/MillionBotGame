@@ -11,6 +11,8 @@ public class Main {
 //        users.add(new User(User.Platform.VK, 83229217));
 //        users.add(new User(User.Platform.VK, 251093754));
         GameFortune game = new GameFortune(users, ioMultiplatformProcessor);
+        //System.out.println(String.format("hello %1$s", "hel"));
+        //System.out.println(String.format("hello ", "hel"));
         game.start();
 
         while (true) {
