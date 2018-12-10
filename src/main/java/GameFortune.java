@@ -48,15 +48,15 @@ public class GameFortune {
     void generateWheel()
     {
         this.wheel = new ArrayList<wheelSector>();
-        //for (int i=0;i<10;i++) {
-        //    wheel.add(wheelSector.POINTS);
-        //}
-        //for (int i=0;i<2;i++) {
-        //    wheel.add(wheelSector.ZERO);
-        //}
+        for (int i=0;i<10;i++) {
+            wheel.add(wheelSector.POINTS);
+        }
+        for (int i=0;i<2;i++) {
+            wheel.add(wheelSector.ZERO);
+        }
         wheel.add(wheelSector.OPENLETTER);
-        //wheel.add(wheelSector.PRIZE);
-        //wheel.add(wheelSector.BANKRUPT);
+        wheel.add(wheelSector.PRIZE);
+        wheel.add(wheelSector.BANKRUPT);
     }
 
     void start() {
@@ -132,16 +132,19 @@ public class GameFortune {
                 break;
             case PRIZE:
                 if (userMessage.toLowerCase().equals("приз")) {
-                    sendAll("приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из спмска
+                    sendAll("игрок выбрал приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из списка
+                    nextPlayer();
                     break;
                 }
                 if (userMessage.toLowerCase().equals("деньги")) {
-                    sendAll("деньги");
+                    sendAll("игрок выбрал деньги");
+                    activePlayer.addScore(100);
+                    nextPlayer();
                     break;
                 }
                 if (userMessage.toLowerCase().equals("играем"))
                 {
-                    sendAll("играем");
+                    sendAll("игрок решил продолжить игру");
                     activePlayerAnswerStatus = answerStatus.LETTER;
                     currentPoints = 500;
                     break;
@@ -157,11 +160,11 @@ public class GameFortune {
                 }
                 catch (NumberFormatException e)
                 {
-                    IOprocessor.sendMes(new Request(activePlayer, "да вы номер буквы скажите"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_NOT_A_NUMBER")));
                     break;
                 }
                 if (letterIndex>=currentWord.length()) {// здесь возможно >
-                    IOprocessor.sendMes(new Request(activePlayer, "слишком большой номер"));
+                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_TOO_BIG")));
                     break;
                 }
                 if (currentWord.charAt(letterIndex)=='-')
@@ -175,7 +178,7 @@ public class GameFortune {
                     activePlayerAnswerStatus = answerStatus.OTHER;
                     break;
                 }
-                IOprocessor.sendMes(new Request(activePlayer, "да эта буква уже открыта, вы другую выбирайте"));
+                IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_ALREADY_OPENED")));
                 break;
             case OTHER:
                 if (userMessage.toLowerCase().equals("буква")) {
@@ -211,7 +214,6 @@ public class GameFortune {
     }
 
     private void wheelRoll() {
-        sendAll(getPhrase("ROLL"));
         wheelSector sector = wheel.get(rnd.nextInt(wheel.size()));
         switch (sector){
             case ZERO:
@@ -219,8 +221,8 @@ public class GameFortune {
                 nextPlayer();
                 break;
             case PRIZE:
-                sendAll("сектор приз на барабане приз, деньги, играем");
-                IOprocessor.sendMes(new Request(activePlayer, "приз или деньги?"));
+                sendAll("сектор приз на барабане");
+                IOprocessor.sendMes(new Request(activePlayer, "приз, деньги, играем?"));
                 activePlayerAnswerStatus = answerStatus.PRIZE;
                 break;
             case OPENLETTER:

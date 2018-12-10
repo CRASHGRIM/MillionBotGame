@@ -7,14 +7,14 @@ import java.util.Map;
 public class Database {
 
     //private ArrayList<User> users;
-    @Getter//это костыль потом исправлю такого не должно быть
+    @Getter//это костыль потом исправлю такого не должно быть(там в одном месте нужен список игроков пофиксится когда будет менюха)
     private Map<Integer, User> users;
 
     Database()
     {
         this.users = new HashMap<>();
         users.put(0, new User(User.Platform.CONSOLE, 0));
-//        users.add(new User(User.Platform.TELEGRAM, 596865644));
+        users.put(596865644, new User(User.Platform.TELEGRAM, 596865644));
 //        users.add(new User(User.Platform.VK, 83229217));
 //        users.add(new User(User.Platform.VK, 251093754));
     }

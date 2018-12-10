@@ -72,12 +72,20 @@
         <Situation name="VICTORY_FOR_ALL">
             <phrase text="%1$s выиграл!!!" />
         </Situation>
-        <Situation name="ROLL">
-            <phrase text="вращайте барабан..." />
-        </Situation>
         <Situation name="WHEEL_SECTOR">
             <phrase text="%1$s на барабане" />
             <phrase text="у вас %1$s" />
+        </Situation>
+        <Situation name="LETTER_OPENING_NOT_A_NUMBER">
+            <phrase text="да вы цифру называйте, цифру" />
+            <phrase text="а у вас не цифра" />
+        </Situation>
+        <Situation name="LETTER_OPENING_TOO_BIG">
+            <phrase text="что то вы слишком большую цифру назвали" />
+        </Situation>
+        <Situation name="LETTER_OPENING_ALREADY_OPENED">
+            <phrase text="да эта буква уже открыта" />
+            <phrase text="а такая буква уже есть" />
         </Situation>
     </Situations>
 </MillionGamePhrases>
