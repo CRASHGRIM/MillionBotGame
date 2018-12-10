@@ -9,8 +9,10 @@ public class IOMultiplatformProcessor {
     private VkIO vkIO;
     private TelegramIO telegramIO;
     private ConsoleIO consoleIO;
+    private Database usersDatabase;
 
-    public IOMultiplatformProcessor() {
+    public IOMultiplatformProcessor(Database database) {
+        this.usersDatabase = database;
         if (Config.IS_CONSOLE_RUN) {
             consoleIO = new ConsoleIO(this);
             consoleIO.start();

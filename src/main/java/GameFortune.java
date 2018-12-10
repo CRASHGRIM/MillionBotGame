@@ -1,8 +1,6 @@
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
 import java.util.*;
 
 public class GameFortune {
@@ -17,14 +15,14 @@ public class GameFortune {
     @Getter
     private IOMultiplatformProcessor IOprocessor;
     private answerStatus activePlayerAnswerStatus;
-    private List<Integer> wheel;
+    private List<wheelSector> wheel;
     private Random rnd;
-    private Integer currentWheelSectorIndex;
     private TechnicalCommands techComm;
     private List<Question> questionList;
     @Getter
     private boolean isGameFinished = false;
     private Map<String, ArrayList<String>> phrases;
+    private int currentPoints;
 
     GameFortune(ArrayList<User> players, IOMultiplatformProcessor ioProcessor) {
         this.players = players;
@@ -37,7 +35,7 @@ public class GameFortune {
         activePlayerAnswerStatus = answerStatus.OTHER;
         currentWord = new StringBuilder();
         currentWord.append(StringUtils.repeat("-", question.getAnswer().length()));
-        wheel = Arrays.asList(100, 50, 0); //List не исменяемый. Чтобы что то поменять, нужно переделать в ArrayList
+        generateWheel();
         techComm = new TechnicalCommands(this);
         try {
             phrases = XMLParcer.parse("src/main/texts/TestMy.xml");
@@ -45,6 +43,20 @@ public class GameFortune {
         catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    void generateWheel()
+    {
+        this.wheel = new ArrayList<wheelSector>();
+        for (int i=0;i<10;i++) {
+            wheel.add(wheelSector.POINTS);
+        }
+        for (int i=0;i<2;i++) {
+            wheel.add(wheelSector.ZERO);
+        }
+        //wheel.add(wheelSector.OPENLETTER);
+        //wheel.add(wheelSector.PRIZE);
+        wheel.add(wheelSector.BANKRUPT);
     }
 
     void start() {
@@ -73,7 +85,9 @@ public class GameFortune {
                 IOprocessor.sendMes(new Request(request.getUser(), "команда отсутствует"));
             return;
         }
-        if (!request.getUser().getId().toString().equals(activePlayer.getId().toString())) {
+        if (request.getUserID()!=activePlayer.getId())// здесь вроде норм но почему то я парсил обе строки к стрингу надо потестить с телегой
+        //if (!request.getUser().getId().toString().equals(activePlayer.getId().toString()))
+        {
             return;
         }
 
@@ -90,9 +104,8 @@ public class GameFortune {
                 if (question.getAnswer().toLowerCase().contains(userMessage.toLowerCase())) {
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_A_LETTER_FOR_PLAYER")));
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
-                    //sendAll(activePlayer.getId().toString() + " угадывает букву " + userMessage);
                     sendAll(String.format(getPhrase("GUESSING_A_LETTER_FOR_ALL"), activePlayer.getId().toString(), userMessage));
-                    activePlayer.addScore(wheel.get(currentWheelSectorIndex));
+                    activePlayer.addScore(currentPoints);
                     for (int i = 0; i < currentWord.length(); i++)
                         if (question.getAnswer().charAt(i) == userMessage.charAt(0))
                             currentWord.replace(i, i + 1, userMessage);
@@ -117,11 +130,32 @@ public class GameFortune {
                     nextPlayer();
                 }
                 break;
+            case PRIZE:
+                if (userMessage.toLowerCase().equals("приз")) {
+                    sendAll("приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из спмска
+                    break;
+                }
+                if (userMessage.toLowerCase().equals("деньги")) {
+                    sendAll("деньги");
+                    break;
+                }
+                if (userMessage.toLowerCase().equals("играем"))
+                {
+                    sendAll("играем");
+                    activePlayerAnswerStatus = answerStatus.LETTER;
+                    currentPoints = 500;
+                    break;
+                }
+                sendAll("что то я вас не понял");
+                break;
+            case LETTEROPENING:
+                sendAll("player opens letter");// здесь нужно проверить что это цифра и открыть эту букву
+                break;
             case OTHER:
                 if (userMessage.toLowerCase().equals("буква")) {
-                    wheelRoll();
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_LETTER")));
                     activePlayerAnswerStatus = answerStatus.LETTER;
+                    wheelRoll();
                     break;
                 }
                 if (userMessage.toLowerCase().equals("слово")) {
@@ -152,8 +186,31 @@ public class GameFortune {
 
     private void wheelRoll() {
         sendAll(getPhrase("ROLL"));
-        currentWheelSectorIndex = rnd.nextInt(wheel.size());
-        sendAll(String.format(getPhrase("WHEEL_SECTOR"), wheel.get(currentWheelSectorIndex).toString()));
+        wheelSector sector = wheel.get(rnd.nextInt(wheel.size()));
+        switch (sector){
+            case ZERO:
+                sendAll("ноль на барабане, следующий игрок");
+                nextPlayer();
+                break;
+            case PRIZE:
+                sendAll("сектор приз на барабане приз, деньги, играем");
+                IOprocessor.sendMes(new Request(activePlayer, "приз или деньги?"));
+                activePlayerAnswerStatus = answerStatus.PRIZE;
+                break;
+            case OPENLETTER:
+                sendAll("скажите номер буквы которую хотите открыть");
+                activePlayerAnswerStatus = answerStatus.LETTEROPENING;
+                break;
+            case BANKRUPT:
+                sendAll("а вы банкрот");
+                activePlayer.bankrupt();
+                nextPlayer();
+                break;
+            case POINTS:
+                currentPoints = (rnd.nextInt(5)+1)*100;
+                sendAll("points "+currentPoints);
+                break;
+        }
     }
 
     private String getPhrase(String situation)
@@ -167,5 +224,6 @@ public class GameFortune {
         }
     }
 
-    enum answerStatus {LETTER, WORD, OTHER}
+    enum answerStatus {LETTER, WORD, PRIZE, LETTEROPENING, OTHER}
+    enum wheelSector {OPENLETTER, BANKRUPT, ZERO, PRIZE, POINTS}
 }

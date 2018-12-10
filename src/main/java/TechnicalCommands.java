@@ -10,7 +10,7 @@ public class TechnicalCommands {
 
     public TechnicalCommands(GameFortune game) {
         listOfCommands.put("!help", (User player) -> game.getIOprocessor().sendMes(new Request(player, help())));
-        listOfCommands.put("!score", (User player) -> game.getIOprocessor().sendMes(new Request(player, player.getScore().toString())));
+        listOfCommands.put("!score", (User player) -> game.getIOprocessor().sendMes(new Request(player, Integer.toString(player.getScore()))));
         listOfCommands.put("!question", (User player) -> game.getIOprocessor().sendMes(new Request(player, game.getQuestion().getQuestion())));
         listOfCommands.put("!currentWord", (User player) -> game.getIOprocessor().sendMes(new Request(player, game.getCurrentWord().toString())));
 }

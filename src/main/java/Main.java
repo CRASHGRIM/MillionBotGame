@@ -3,17 +3,10 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        IOMultiplatformProcessor ioMultiplatformProcessor = new IOMultiplatformProcessor();
-
-        ArrayList<User> users = new ArrayList<User>();
-        users.add(new User(User.Platform.CONSOLE, 0));
-//        users.add(new User(User.Platform.TELEGRAM, 596865644));
-//        users.add(new User(User.Platform.VK, 83229217));
-//        users.add(new User(User.Platform.VK, 251093754));
-        GameFortune game = new GameFortune(users, ioMultiplatformProcessor);
-        //System.out.println(String.format("hello %1$s", "hel"));
-        //System.out.println(String.format("hello ", "hel"));
-        game.start();
+        Database usersDatabase = new Database();
+        IOMultiplatformProcessor ioMultiplatformProcessor = new IOMultiplatformProcessor(usersDatabase);
+        GameFortune game = new GameFortune(new ArrayList<User>(usersDatabase.getUsers().values()), ioMultiplatformProcessor);
+        game.start();// здесь надо пихать в игру не всю базу а только нескольких игроков которые будут играть собсна
 
         while (true) {
             if (game.isGameFinished())
