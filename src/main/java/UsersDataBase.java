@@ -1,7 +1,3 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.BufferedWriter;
 import java.util.*;
 
 public class UsersDataBase {
@@ -15,31 +11,30 @@ public class UsersDataBase {
         this.ioMultiplatformProcessor = ioMultiplatformProcessor;
     }
 
+    public User getUser (String tag) {
+        return users.get(usersTags.indexOf(tag));
+    }
+
     boolean isUserNotRegister(User user) {
         String userTag = user.getPlatform() + ":" + user.getId();
         return !usersTags.contains(userTag);
     }
 
     public void addUser(User user) {
-        String userTag = user.getPlatform() + ":" + user.getId();
-        if (isUserAlreadyRegister(userTag)) {
+        if (isUserAlreadyRegister(user.getTag())) {
             ioMultiplatformProcessor.sendMes(new Request(user, "Вы уже зарегистрированны!"));
-            return;
-        }
-        if (isUserNameAlreadyUsed(user.getName())) {
-            ioMultiplatformProcessor.sendMes(new Request(user, "Имя уже занято, попробуйте другое!"));
             return;
         }
         users.add(user);
         usersNames.add(user.getName());
-        usersTags.add(userTag);
+        usersTags.add(user.getTag());
     }
 
     private boolean isUserAlreadyRegister(String userTag) {
         return usersTags.contains(userTag);
     }
 
-    private boolean isUserNameAlreadyUsed(String userName) {
+    public boolean isUserNameAlreadyUsed(String userName) {
         return usersNames.contains(userName);
     }
 

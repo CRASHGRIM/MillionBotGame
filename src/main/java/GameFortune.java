@@ -76,7 +76,6 @@ public class GameFortune {
 
 
     void processRequest(Request request) {
-        System.out.println(request);
         String userMessage = request.getMessage();
 
         if (userMessage.startsWith("!")) {

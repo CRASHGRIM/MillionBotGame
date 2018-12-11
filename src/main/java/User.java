@@ -32,5 +32,9 @@ class User {
 
     void bankrupt() {score = 0;}
 
+    String getTag(){
+        return platform + ":" + id;
+    }
+
     enum Platform {CONSOLE, VK, TELEGRAM}
 }

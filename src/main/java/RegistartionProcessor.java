@@ -24,7 +24,7 @@ class RegistartionProcessor {
     void processRequest(Request request) {
         if (!isRequestEqualRegister(request.getMessage())) {
             ioMultiplatformProcessor.sendMes(request.getUser(), "Вы не зарегистрированны.");
-            ioMultiplatformProcessor.sendMes(request.getUser(), "Для регистрации введите \"!register ВАШЕ_ИМЯ\" без ковычек.");
+            ioMultiplatformProcessor.sendMes(request.getUser(), "Для регистрации введите \"!register ВАШЕ_ИМЯ\" без кавычек.");
             return;
         }
         if (!isRegisterRequestCorrect(request.getMessage())) {
@@ -33,6 +33,10 @@ class RegistartionProcessor {
             return;
         }
         String userName = request.getMessage().split(" ")[1];
+        if (usersDataBase.isUserNameAlreadyUsed(userName)) {
+            ioMultiplatformProcessor.sendMes(request.getUser(), "Имя уже занято, попробуйте другое!");
+            return;
+        }
         usersDataBase.addUser(new User(request.getPlatform(), request.getUserID(), userName));
         ioMultiplatformProcessor.sendMes(request.getUser(), userName + ", регистрация прошла успешно.");
     }
