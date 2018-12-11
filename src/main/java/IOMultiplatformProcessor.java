@@ -9,10 +9,8 @@ public class IOMultiplatformProcessor {
     private VkIO vkIO;
     private TelegramIO telegramIO;
     private ConsoleIO consoleIO;
-    private Database usersDatabase;
 
-    public IOMultiplatformProcessor(Database database) {
-        this.usersDatabase = database;
+    public IOMultiplatformProcessor() {
         if (Config.IS_CONSOLE_RUN) {
             consoleIO = new ConsoleIO(this);
             consoleIO.start();
@@ -47,20 +45,22 @@ public class IOMultiplatformProcessor {
     }
 
     void sendMes(Request request) {
-        //User user = request.getUser();
-        String message = request.getMessage();
-        switch (request.getPlatform()) {
+        sendMes(request.getUser(), request.getMessage());
+    }
+
+    void sendMes(User user, String message) {
+        switch (user.getPlatform()) {
             case CONSOLE:
                 if (Config.IS_CONSOLE_RUN)
                     consoleIO.sendMes(message);
                 break;
             case VK:
                 if (Config.IS_VK_RUN)
-                    vkIO.sendMessage(request.getUserID(), message);
+                    vkIO.sendMessage(user.getId(), message);
                 break;
             case TELEGRAM:
                 if (Config.IS_TG_RUN)
-                    telegramIO.sendMsg(message, request.getUserID());
+                    telegramIO.sendMsg(message, user.getId());
         }
     }
 }

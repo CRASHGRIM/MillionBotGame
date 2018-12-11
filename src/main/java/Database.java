@@ -13,10 +13,11 @@ public class Database {
     Database()
     {
         this.users = new HashMap<>();
-        users.put(0, new User(User.Platform.CONSOLE, 0));
-        users.put(596865644, new User(User.Platform.TELEGRAM, 596865644));
+        users.put(0, new User(User.Platform.CONSOLE, 0, "Console"));
+//        users.put(596865644, new User(User.Platform.TELEGRAM, 596865644));
 //        users.add(new User(User.Platform.VK, 83229217));
-//        users.add(new User(User.Platform.VK, 251093754));
+        users.put(251093754, new User(User.Platform.VK, 251093754, "Dims"));
+
     }
 
     public User getUser(int userID)

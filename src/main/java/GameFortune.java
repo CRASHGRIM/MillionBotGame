@@ -64,7 +64,7 @@ public class GameFortune {
         sendAll(getPhrase("TASK_IS:"));
         sendAll(question.getQuestion());
         sendAll(currentWord.toString());
-        sendAll(activePlayer.getId().toString() + getPhrase("PLAYER_BEGINS_THE_ROUND"));
+        sendAll(activePlayer.getName() + getPhrase("PLAYER_BEGINS_THE_ROUND"));
         IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
     }
 
@@ -76,6 +76,7 @@ public class GameFortune {
 
 
     void processRequest(Request request) {
+        System.out.println(request);
         String userMessage = request.getMessage();
 
         if (userMessage.startsWith("!")) {
@@ -104,7 +105,7 @@ public class GameFortune {
                 if (question.getAnswer().toLowerCase().contains(userMessage.toLowerCase())) {
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_A_LETTER_FOR_PLAYER")));
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
-                    sendAll(String.format(getPhrase("GUESSING_A_LETTER_FOR_ALL"), activePlayer.getId().toString(), userMessage));
+                    sendAll(String.format(getPhrase("GUESSING_A_LETTER_FOR_ALL"), activePlayer.getName(), userMessage));
                     activePlayer.addScore(currentPoints);
                     for (int i = 0; i < currentWord.length(); i++)
                         if (question.getAnswer().charAt(i) == userMessage.charAt(0))
@@ -116,17 +117,17 @@ public class GameFortune {
                     break;
                 }
                 IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_LETTER_FOR_PLAYER")));
-                sendAll(String.format(getPhrase("GUESSING_WRONG_LETTER_FOR_ALL"), activePlayer.getId().toString(), userMessage));
+                sendAll(String.format(getPhrase("GUESSING_WRONG_LETTER_FOR_ALL"), activePlayer.getName(), userMessage));
                 nextPlayer();
                 break;
             case WORD:
                 if (userMessage.toLowerCase().equals(question.getAnswer().toLowerCase())) {
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_RIGHT_WORD_FOR_PLAYER")));
-                    sendAll(String.format(getPhrase("GUESSING_RIGHT_WORD_FOR_ALL"), activePlayer.getId().toString(), question.getAnswer()));
+                    sendAll(String.format(getPhrase("GUESSING_RIGHT_WORD_FOR_ALL"), activePlayer.getName(), question.getAnswer()));
                     win();
                 } else {
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_WORD_FOR_PLAYER")));
-                    sendAll(String.format(getPhrase("GUESSING_WRONG_WORD_FOR_ALL"), activePlayer.getId().toString(), userMessage));
+                    sendAll(String.format(getPhrase("GUESSING_WRONG_WORD_FOR_ALL"), activePlayer.getName(), userMessage));
                     nextPlayer();
                 }
                 break;
@@ -203,13 +204,13 @@ public class GameFortune {
         activePlayerIndex = (activePlayerIndex+ 1) % players.size();
         activePlayer = players.get(activePlayerIndex);
         activePlayerAnswerStatus = answerStatus.OTHER;
-        sendAll("В игру вступает " + activePlayer.getId().toString());
+        sendAll("В игру вступает " + activePlayer.getName());
         IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
     }
 
     private void win() {
         IOprocessor.sendMes(new Request(activePlayer, getPhrase("VICTORY_FOR_PLAYER")));
-        sendAll(String.format(getPhrase("VICTORY_FOR_ALL"), activePlayer.getId().toString()));
+        sendAll(String.format(getPhrase("VICTORY_FOR_ALL"), activePlayer.getName()));
         isGameFinished = true;
     }
 
