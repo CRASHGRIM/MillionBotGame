@@ -24,7 +24,7 @@ public class Lobby {
     }
 
     public boolean isGameCanStart() {
-        return usersInLobby.size() > 1 && !isInGame;
+        return usersInLobby.size() == Config.USERS_IN_LOBBY && !isInGame;
     }
 
     public void startGame() {

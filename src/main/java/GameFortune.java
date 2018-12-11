@@ -106,6 +106,7 @@ public class GameFortune {
                     IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
                     sendAll(String.format(getPhrase("GUESSING_A_LETTER_FOR_ALL"), activePlayer.getName(), userMessage));
                     activePlayer.addScore(currentPoints);
+                    userMessage = userMessage.toLowerCase();
                     for (int i = 0; i < currentWord.length(); i++)
                         if (question.getAnswer().charAt(i) == userMessage.charAt(0))
                             currentWord.replace(i, i + 1, userMessage);
