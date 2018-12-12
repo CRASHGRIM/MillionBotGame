@@ -12,7 +12,7 @@ public class MenuProcessor {
     }
 
     public void processRequest(Request request) {
-        switch (request.getMessage()) {
+        switch (request.getMessage().toLowerCase()) {
             case "!start":
                 addUserToLobby(request.getUser());
                 ioMultiplatformProcessor.sendMes(request.getUser(), "Вы в очереди. Ожидайте.");
