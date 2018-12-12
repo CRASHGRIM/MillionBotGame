@@ -49,6 +49,7 @@ public class IOMultiplatformProcessor {
     }
 
     void sendMes(User user, String message) {
+        //ToDo общий интерфейс (map)
         switch (user.getPlatform()) {
             case CONSOLE:
                 if (Config.IS_CONSOLE_RUN)

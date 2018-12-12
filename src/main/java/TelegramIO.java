@@ -23,7 +23,7 @@ public class TelegramIO extends TelegramLongPollingBot {
 
     void sendMsg(String s, long chatID) {
         try {
-            execute(new SendMessage().setChatId(chatID).setText(s).enableMarkdown(true));
+            execute(new SendMessage().setChatId(chatID).setText(s).enableMarkdown(false));
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

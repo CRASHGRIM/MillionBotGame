@@ -14,6 +14,7 @@ public class MenuProcessor {
     public void processRequest(Request request) {
         switch (request.getMessage().toLowerCase()) {
             case "!start":
+                //ToDo обращаться не ко всем лобби
                 addUserToLobby(request.getUser());
                 ioMultiplatformProcessor.sendMes(request.getUser(), "Вы в очереди. Ожидайте.");
                 break;

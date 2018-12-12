@@ -76,6 +76,7 @@ public class GameFortune {
 
 
     void processRequest(Request request) {
+        //ToDo в lowercase
         String userMessage = request.getMessage();
 
         if (userMessage.startsWith("!")) {
@@ -132,6 +133,7 @@ public class GameFortune {
                 }
                 break;
             case PRIZE:
+                //ToDo команды в XML
                 if (userMessage.toLowerCase().equals("приз")) {
                     sendAll("игрок выбрал приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из списка
                     nextPlayer();

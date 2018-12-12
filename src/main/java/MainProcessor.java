@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainProcessor {
+    //ToDO вынести в класс DaTa всё, что относиттся к состоянию игры
     private IOMultiplatformProcessor ioMultiplatformProcessor = new IOMultiplatformProcessor();
     private UsersDataBase usersDataBase = new UsersDataBase(ioMultiplatformProcessor);
     private RegistartionProcessor registartionProcessor = new RegistartionProcessor(ioMultiplatformProcessor, usersDataBase);
@@ -14,6 +15,7 @@ public class MainProcessor {
         while (true) {
             processFinishedGames();
             tryStartLobbyes();
+            //ToDo перенести в добавление пользователя
             if (ioMultiplatformProcessor.isHasUnprocessedRequests()) {
                 Request request = ioMultiplatformProcessor.pollRequest();
                 if (usersDataBase.isUserNotRegister(request.getUser())) { //Незарегистрированный

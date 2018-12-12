@@ -12,7 +12,7 @@ public class Config {
 
     static final boolean IS_CONSOLE_RUN = true;
     static final boolean IS_VK_RUN = true;
-    static final boolean IS_TG_RUN = false;
+    static final boolean IS_TG_RUN = true;
 
     static final int USERS_IN_LOBBY = 3;
 }
