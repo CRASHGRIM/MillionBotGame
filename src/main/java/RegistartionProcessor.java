@@ -1,16 +1,12 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.BufferedWriter;
-import java.util.ArrayList;
-
 class RegistartionProcessor {
     IOMultiplatformProcessor ioMultiplatformProcessor;
-    UsersDataBase usersDataBase;
+    LocalDataBase localDataBase;
+    MySQL mySQLdataBase;
 
-    RegistartionProcessor(IOMultiplatformProcessor ioMultiplatformProcessor, UsersDataBase usersDataBase) {
+    RegistartionProcessor(IOMultiplatformProcessor ioMultiplatformProcessor, LocalDataBase localDataBase, MySQL mySQLdataBase) {
         this.ioMultiplatformProcessor = ioMultiplatformProcessor;
-        this.usersDataBase = usersDataBase;
+        this.localDataBase = localDataBase;
+        this.mySQLdataBase = mySQLdataBase;
     }
 
     boolean isRequestEqualRegister(String message) {
@@ -33,11 +29,16 @@ class RegistartionProcessor {
             return;
         }
         String userName = request.getMessage().split(" ")[1];
-        if (usersDataBase.isUserNameAlreadyUsed(userName)) {
+        if (localDataBase.isUserNameAlreadyUsed(userName)) {
             ioMultiplatformProcessor.sendMes(request.getUser(), "Имя уже занято, попробуйте другое!");
             return;
         }
-        usersDataBase.addUser(new User(request.getPlatform(), request.getUserID(), userName));
+        localDataBase.addUser(new User(request.getPlatform(), request.getUserID(), userName));
+        mySQLdataBase.insertPlayer(new User(request.getPlatform(), request.getUserID(), userName));
         ioMultiplatformProcessor.sendMes(request.getUser(), userName + ", регистрация прошла успешно.");
+    }
+
+    public void putUser(User user){
+        localDataBase.addUser(user);
     }
 }

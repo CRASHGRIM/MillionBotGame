@@ -2,13 +2,17 @@ import java.util.ArrayList;
 
 public class MenuProcessor {
     IOMultiplatformProcessor ioMultiplatformProcessor;
-    ArrayList<Lobby> lobbyes;
-    UsersDataBase usersDataBase;
+    ArrayList<Lobby> lobbies;
+    ArrayList<User> unitedLobby;
+    LocalDataBase localDataBase;
+    MySQL dataBase;
 
-    public MenuProcessor(IOMultiplatformProcessor ioMultiplatformProcessor, ArrayList<Lobby> lobbyes, UsersDataBase usersDataBase) {
+    public MenuProcessor(IOMultiplatformProcessor ioMultiplatformProcessor, ArrayList<Lobby> lobbies, LocalDataBase localDataBase, MySQL dataBase) {
         this.ioMultiplatformProcessor = ioMultiplatformProcessor;
-        this.lobbyes = lobbyes;
-        this.usersDataBase = usersDataBase;
+        this.lobbies = lobbies;
+        this.localDataBase = localDataBase;
+        this.dataBase = dataBase;
+        this.unitedLobby = new ArrayList<>();
     }
 
     public void processRequest(Request request) {
@@ -16,6 +20,7 @@ public class MenuProcessor {
             case "!start":
                 //ToDo обращаться не ко всем лобби
                 addUserToLobby(request.getUser());
+                dataBase.refreshReady(request.getUserID());
                 ioMultiplatformProcessor.sendMes(request.getUser(), "Вы в очереди. Ожидайте.");
                 break;
             default:
@@ -25,16 +30,20 @@ public class MenuProcessor {
         }
     }
 
-    private void addUserToLobby(User user) {
-        User userFromDatabase = usersDataBase.getUser(user.getTag());
+    private void addUserToLobby(User user) {//здесь нужно тупо создать лист и при добавлении нового юзера чекать что лист меньше чем количество игроков в игре
+        unitedLobby.add(user);
+        if (unitedLobby.size()==Config.USERS_IN_LOBBY){
+            //здесь создаем игру и кидаем туда всех из лобби (потом сдлеать проверку на реади)
+        }
+        User userFromDatabase = localDataBase.getUser(user.getTag());
         boolean isUserFindLobby = false;
-        for (int i = 0; i < lobbyes.size(); ++i) {
-            if (lobbyes.get(i) != null && lobbyes.get(i).getPlayersCount() < Config.USERS_IN_LOBBY) {
-                lobbyes.get(i).addUserToLobby(userFromDatabase);
+        for (int i = 0; i < lobbies.size(); ++i) {
+            if (lobbies.get(i) != null && lobbies.get(i).getPlayersCount() < Config.USERS_IN_LOBBY) {
+                lobbies.get(i).addUserToLobby(userFromDatabase);
                 isUserFindLobby = true;
             }
         }
         if (!isUserFindLobby)
-            lobbyes.add(new Lobby(userFromDatabase));
+            lobbies.add(new Lobby(userFromDatabase));
     }
 }

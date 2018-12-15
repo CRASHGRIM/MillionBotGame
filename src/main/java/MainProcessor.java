@@ -4,11 +4,12 @@ import java.util.HashMap;
 public class MainProcessor {
     //ToDO вынести в класс DaTa всё, что относиттся к состоянию игры
     private IOMultiplatformProcessor ioMultiplatformProcessor = new IOMultiplatformProcessor();
-    private UsersDataBase usersDataBase = new UsersDataBase(ioMultiplatformProcessor);
-    private RegistartionProcessor registartionProcessor = new RegistartionProcessor(ioMultiplatformProcessor, usersDataBase);
+    private LocalDataBase localDataBase = new LocalDataBase(ioMultiplatformProcessor);
+    private MySQL dataBase = new MySQL(Config.databaseURL, Config.databaseUser, Config.databasePassword);
+    private RegistartionProcessor registartionProcessor = new RegistartionProcessor(ioMultiplatformProcessor, localDataBase, dataBase);
     private ArrayList<Lobby> lobbyes = new ArrayList<>();
     private HashMap<String, Integer> usersGamesForTags = new HashMap<String, Integer>();
-    private MenuProcessor menuProcessor = new MenuProcessor(ioMultiplatformProcessor, lobbyes, usersDataBase);
+    private MenuProcessor menuProcessor = new MenuProcessor(ioMultiplatformProcessor, lobbyes, localDataBase, dataBase);
     private ArrayList<GameFortune> games = new ArrayList<GameFortune>();
 
     public void start() {
@@ -18,9 +19,21 @@ public class MainProcessor {
             //ToDo перенести в добавление пользователя
             if (ioMultiplatformProcessor.isHasUnprocessedRequests()) {
                 Request request = ioMultiplatformProcessor.pollRequest();
-                if (usersDataBase.isUserNotRegister(request.getUser())) { //Незарегистрированный
+                if (!dataBase.checkRegister(request.getUserID()))//Незарегистрированный
+                {
                     registartionProcessor.processRequest(request);
-                } else if (!usersGamesForTags.containsKey(request.getUser().getTag())) { //Не в игре
+                }
+                else if (localDataBase.isUserNotRegister(request.getUser())) { //есть в базе но нет в локальной
+                    try {
+                        registartionProcessor.putUser(dataBase.loadInfo(request.getUserID()));
+                        dataBase.dropReady(request.getUser());
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if (!dataBase.checkInGame(request.getUserID())) { //Не в игре
                     menuProcessor.processRequest(request);
                 } else
                     games.get(usersGamesForTags.get(request.getUser().getTag())).processRequest(request);

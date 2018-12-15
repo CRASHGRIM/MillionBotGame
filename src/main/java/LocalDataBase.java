@@ -1,13 +1,13 @@
 import java.util.*;
 
-public class UsersDataBase {
+public class LocalDataBase {
 
     private IOMultiplatformProcessor ioMultiplatformProcessor;
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<String> usersNames = new ArrayList<>();
     private ArrayList<String> usersTags = new ArrayList<>(); //Tag [platform:id]
 
-    UsersDataBase(IOMultiplatformProcessor ioMultiplatformProcessor) {
+    LocalDataBase(IOMultiplatformProcessor ioMultiplatformProcessor) {
         this.ioMultiplatformProcessor = ioMultiplatformProcessor;
     }
 
@@ -22,7 +22,7 @@ public class UsersDataBase {
 
     public void addUser(User user) {
         if (isUserAlreadyRegister(user.getTag())) {
-            ioMultiplatformProcessor.sendMes(new Request(user, "Вы уже зарегистрированны!"));
+            ioMultiplatformProcessor.sendMes(new Request(user, "Вы уже зарегистрированы!"));
             return;
         }
         users.add(user);
