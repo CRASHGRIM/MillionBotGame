@@ -1,4 +1,5 @@
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString
@@ -11,12 +12,16 @@ class User {
     private int score;
     @Getter
     private String name;
+    @Getter
+    @Setter
+    private Integer currentGameIdentifier;
 
     User(Platform platform, Integer id) {
         this.platform = platform;
         this.id = id;
         this.score = 0;
         this.name = id.toString();
+        this.currentGameIdentifier = null;
     }
 
     User(Platform platform, Integer id, String name) {
@@ -24,6 +29,7 @@ class User {
         this.id = id;
         this.score = 0;
         this.name = name;
+        this.currentGameIdentifier = null;
     }
 
     void addScore(int points) {

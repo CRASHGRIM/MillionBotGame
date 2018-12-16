@@ -1,3 +1,5 @@
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,8 +11,10 @@ public class MainProcessor {
     private RegistartionProcessor registartionProcessor = new RegistartionProcessor(ioMultiplatformProcessor, localDataBase, dataBase);
     private ArrayList<Lobby> lobbyes = new ArrayList<>();
     private HashMap<String, Integer> usersGamesForTags = new HashMap<String, Integer>();
-    private MenuProcessor menuProcessor = new MenuProcessor(ioMultiplatformProcessor, lobbyes, localDataBase, dataBase);
+    private MenuProcessor menuProcessor = new MenuProcessor(ioMultiplatformProcessor, this);
     private ArrayList<GameFortune> games = new ArrayList<GameFortune>();
+    @Getter
+    private MatchMakingProcessor matchMakingProcessor = new MatchMakingProcessor(ioMultiplatformProcessor, dataBase);
 
     public void start() {
         while (true) {
@@ -35,8 +39,10 @@ public class MainProcessor {
                 }
                 else if (!dataBase.checkInGame(request.getUserID())) { //Не в игре
                     menuProcessor.processRequest(request);
-                } else
-                    games.get(usersGamesForTags.get(request.getUser().getTag())).processRequest(request);
+                } else {
+                    int gameIndex = dataBase.getGameIndex(request.getUserID());
+                    matchMakingProcessor.getLobbiesDict().get(gameIndex).processRequest(request);
+                }
             }
             try {
                 Thread.sleep(1000);
