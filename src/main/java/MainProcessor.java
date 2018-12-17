@@ -18,8 +18,6 @@ public class MainProcessor {
 
     public void start() {
         while (true) {
-            processFinishedGames();
-            tryStartLobbyes();
             //ToDo перенести в добавление пользователя
             if (ioMultiplatformProcessor.isHasUnprocessedRequests()) {
                 Request request = ioMultiplatformProcessor.pollRequest();
@@ -40,8 +38,19 @@ public class MainProcessor {
                 else if (!dataBase.checkInGame(request.getUserID())) { //Не в игре
                     menuProcessor.processRequest(request);
                 } else {
+                    System.out.println(dataBase.checkInGame(request.getUserID()));
                     int gameIndex = dataBase.getGameIndex(request.getUserID());
-                    matchMakingProcessor.getLobbiesDict().get(gameIndex).processRequest(request);
+                    matchMakingProcessor.getLobbiesDict().get(gameIndex).processRequest(request);//здесь надо проверять закончилась ли игра после реквеста
+                    if (matchMakingProcessor.getLobbiesDict().get(gameIndex).isGameFinished())
+                    {
+                        ArrayList<User> usersInGame = dataBase.getUsersInGame(gameIndex);
+                        for (int i=0;i<usersInGame.size();i++)
+                        {
+                            ioMultiplatformProcessor.sendMes(new Request(usersInGame.get(i), "игра закончилась"));
+                            dataBase.userLeavesGame(usersInGame.get(i));
+                        }
+                        matchMakingProcessor.getLobbiesDict().remove(gameIndex);
+                    }
                 }
             }
             try {

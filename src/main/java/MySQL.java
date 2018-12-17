@@ -1,12 +1,13 @@
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class MySQL {
     private Connection connection;
 
     //private static String selectUserString = "SELECT * FROM users WHERE userID=?";
     private static String updateString = "UPDATE users SET score=score+? WHERE userID=?";
-    private static String dropReadyDateString = "UPDATE users SET lastReady=null WHERE userID=?";
+    private static String dropReadyDateString = "UPDATE users SET lastReady=null, isInGame=0 WHERE userID=?";
     private static String insertNewPlayerString =  "INSERT INTO users VALUES (?, ?, ?, 0, null, 0, null)";
     private static String checkRegisterString =  "SELECT * FROM users WHERE userID=?";
     private static String userInGameString =  "UPDATE users SET isInGame=1 WHERE userID=?";
@@ -14,6 +15,7 @@ public class MySQL {
     private static String selectPlayerString = "SELECT * FROM users WHERE userID=?";
     private static String refreshReadyString = "UPDATE users SET lastReady=? WHERE userID=?";
     private static String userSetGameString =  "UPDATE users SET gameIndex=? WHERE userID=?";
+    private static String selectUsersInGameString =  "SELECT * FROM users WHERE gameIndex=?";
 
     private static PreparedStatement updateCommand;
     private static PreparedStatement dropReadyDateCommand;
@@ -24,6 +26,7 @@ public class MySQL {
     private static PreparedStatement selectUserCommand;
     private static PreparedStatement refreshReadyCommand;
     private static PreparedStatement userSetGameCommand;
+    private static PreparedStatement selectUsersInGameCommand;
 
 
 
@@ -40,6 +43,7 @@ public class MySQL {
             selectUserCommand = connection.prepareStatement(selectPlayerString);
             refreshReadyCommand = connection.prepareStatement(refreshReadyString);
             userSetGameCommand = connection.prepareStatement(userSetGameString);
+            selectUsersInGameCommand = connection.prepareStatement(selectUsersInGameString);
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
         }
@@ -149,7 +153,7 @@ public class MySQL {
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
         }
-        return true;//здесь возможно стоит бросать exception
+        return false;//здесь возможно стоит бросать exception
     }
 
     public void refreshReady(int userID){
@@ -187,6 +191,38 @@ public class MySQL {
             sqlEx.printStackTrace();
         }
         return 0;//здесь возможно стоит бросать exception
+    }
+
+    public ArrayList<User> getUsersInGame(int gameID)
+    {
+        try {
+            ArrayList<User> outUsers = new ArrayList<User>();
+            System.out.println(gameID);
+            selectUsersInGameCommand.setInt(1, gameID);
+            ResultSet resultSet = selectUsersInGameCommand.executeQuery();
+            while(resultSet.next()) {
+                User outUser = new User(SQLEnumToJavaEnum(resultSet.getString("platform")), resultSet.getInt("userID"), resultSet.getString("username"));
+                outUsers.add(outUser);
+            return outUsers;
+            }
+        } catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        }
+        return new ArrayList<User>();//здесь возможно стоит бросать exception
+    }
+
+    private User.Platform SQLEnumToJavaEnum(String en)
+    {
+        switch (en){
+            case Config.databaseConsoleTag:
+                return User.Platform.CONSOLE;
+            case Config.databaseVKTag:
+                return User.Platform.VK;
+            case Config.databaseTelegramTag:
+                return User.Platform.TELEGRAM;
+            default:
+                return User.Platform.CONSOLE;
+        }
     }
 
 }

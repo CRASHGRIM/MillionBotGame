@@ -38,7 +38,7 @@ public class MatchMakingProcessor {
             }
             lobbiesDict.put(currentgameIndex, new GameFortune(usersGoingToGame, this.ioMultiplatformProcessor));
             lobbiesDict.get(currentgameIndex).start();
-            currentgameIndex += 1;
+            currentgameIndex += 1;//здесь обработать максинт
         }
     }
 }
