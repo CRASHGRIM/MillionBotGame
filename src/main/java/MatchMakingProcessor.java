@@ -24,13 +24,21 @@ public class MatchMakingProcessor {
 
     public void addUserToLobby(User user) {
         dataBase.refreshReady(user.getId());
+        for (int i=0; i<userQueue.size();i++)
+        {
+            if (userQueue.get(i).getId()==user.getId())
+                return;
+        }
         userQueue.add(user);
+       // dataBase.refreshReady(user.getId());
+        //userQueue.add(user);//надо проверить что юзер уже в очереди
         //userQueue.element() //здесь надо проверить первого юзера на то что он слишком долго в очереди
         if (userQueue.size()>=Config.USERS_IN_LOBBY)
         {
             ArrayList<User> usersGoingToGame = new ArrayList<>();
             while(usersGoingToGame.size()<Config.USERS_IN_LOBBY) {
                 User userGoingToGame = userQueue.pollFirst();
+                userGoingToGame.setName(dataBase.getUserName(userGoingToGame.getId()));
                 userGoingToGame.setCurrentGameIdentifier(currentgameIndex);
                 usersGoingToGame.add(userGoingToGame);
                 dataBase.userInGame(userGoingToGame);
@@ -38,7 +46,15 @@ public class MatchMakingProcessor {
             }
             lobbiesDict.put(currentgameIndex, new GameFortune(usersGoingToGame, this.ioMultiplatformProcessor));
             lobbiesDict.get(currentgameIndex).start();
-            currentgameIndex += 1;//здесь обработать максинт
+            if (currentgameIndex==Integer.MAX_VALUE)
+                currentgameIndex=0;
+            else
+                currentgameIndex+=1;
         }
+    }
+    public void checkQueueForTooLongWaiting()
+    {
+        //здесь нужно проверить что юзер в очереди слишком долго ждет и если это так послать ему что игра не нашлась
+
     }
 }

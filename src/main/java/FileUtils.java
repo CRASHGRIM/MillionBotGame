@@ -28,7 +28,6 @@ class FileUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
-        //ToDo вынести ошибку
+        throw new NullPointerException();
     }
 }

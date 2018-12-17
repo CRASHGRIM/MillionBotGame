@@ -47,8 +47,6 @@ public class XMLParcer {
             if (qName.equals("Situation")) {
                 phrases.put(attributes.getValue("name"), new ArrayList<String>());
                 currentSituatuion = attributes.getValue("name");
-                //String phrase = attributes.getValue("name");
-                //System.out.println(phrase);
             }
             if (qName.equals("phrase"))
             {

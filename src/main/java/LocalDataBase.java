@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class LocalDataBase {
+public class LocalDataBase {//здесь возможно что то лишнее
 
     private IOMultiplatformProcessor ioMultiplatformProcessor;
     private ArrayList<User> users = new ArrayList<>();
@@ -21,7 +21,7 @@ public class LocalDataBase {
     }
 
     public void addUser(User user) {
-        if (isUserAlreadyRegister(user.getTag())) {
+        if (isUserAlreadyRegister(user.getTag())) {//здесь корявая проверка на то что юзер уже зарегистрирован
             ioMultiplatformProcessor.sendMes(new Request(user, "Вы уже зарегистрированы!"));
             return;
         }
@@ -38,6 +38,5 @@ public class LocalDataBase {
         return usersNames.contains(userName);
     }
 
-    //ToDo Добавить сохранение
 }
 

@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 public class MenuProcessor {
     private IOMultiplatformProcessor ioMultiplatformProcessor;
-    private ArrayList<Lobby> lobbies;
     private ArrayList<User> unitedLobby;
     private LocalDataBase localDataBase;
     private MySQL dataBase;
@@ -22,9 +21,8 @@ public class MenuProcessor {
     public void processRequest(Request request) {
         switch (request.getMessage().toLowerCase()) {
             case "!start":
-                //ToDo обращаться не ко всем лобби
                 ioMultiplatformProcessor.sendMes(request.getUser(), "Вы в очереди. Ожидайте.");
-                mainProcessor.getMatchMakingProcessor().addUserToLobby(request.getUser());
+                mainProcessor.getMatchMakingProcessor().addUserToLobby(request.getUser());//TODO сделать проверку что уже в лобби
                 break;
             default:
                 ioMultiplatformProcessor.sendMes(request.getUser(), "Неправильная команда.");

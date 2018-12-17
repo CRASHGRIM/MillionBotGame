@@ -74,10 +74,16 @@ public class GameFortune {
         }
     }
 
+    private void sendAllExceptActive(String message) {
+        for (User player : players) {
+            if (player.getId()!=activePlayer.getId())
+                IOprocessor.sendMes(new Request(player, message));
+        }
+    }
+
 
     void processRequest(Request request) {
-        //ToDo в lowercase
-        String userMessage = request.getMessage();
+        String userMessage = request.getMessage().toLowerCase();
 
         if (userMessage.startsWith("!")) {
             if (techComm.listOfCommands.containsKey(userMessage))
@@ -86,116 +92,26 @@ public class GameFortune {
                 IOprocessor.sendMes(new Request(request.getUser(), "команда отсутствует"));
             return;
         }
-        if (request.getUserID()!=activePlayer.getId())// здесь вроде норм но почему то я парсил обе строки к стрингу надо потестить с телегой
-        //if (!request.getUser().getId().toString().equals(activePlayer.getId().toString()))
+        if (request.getUserID()!=activePlayer.getId())
         {
             return;
         }
-
         switch (activePlayerAnswerStatus) {
             case LETTER:
-                if (userMessage.length() > 1) {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("NOT_A_LETTER")));
-                    break;
-                }
-                if (currentWord.indexOf(userMessage) != -1) {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_THAT_ALREADY_WAS")));
-                    break;
-                }
-                if (question.getAnswer().toLowerCase().contains(userMessage.toLowerCase())) {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_A_LETTER_FOR_PLAYER")));
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
-                    sendAll(String.format(getPhrase("GUESSING_A_LETTER_FOR_ALL"), activePlayer.getName(), userMessage));
-                    activePlayer.addScore(currentPoints);
-                    userMessage = userMessage.toLowerCase();
-                    for (int i = 0; i < currentWord.length(); i++)
-                        if (question.getAnswer().charAt(i) == userMessage.charAt(0))
-                            currentWord.replace(i, i + 1, userMessage);
-                    sendAll(currentWord.toString());
-                    if (currentWord.toString().toLowerCase().equals(question.getAnswer().toLowerCase()))
-                        win();
-                    activePlayerAnswerStatus = answerStatus.OTHER;
-                    break;
-                }
-                IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_LETTER_FOR_PLAYER")));
-                sendAll(String.format(getPhrase("GUESSING_WRONG_LETTER_FOR_ALL"), activePlayer.getName(), userMessage));
-                nextPlayer();
+                processLetterGuessing(userMessage);
                 break;
             case WORD:
-                if (userMessage.toLowerCase().equals(question.getAnswer().toLowerCase())) {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_RIGHT_WORD_FOR_PLAYER")));
-                    sendAll(String.format(getPhrase("GUESSING_RIGHT_WORD_FOR_ALL"), activePlayer.getName(), question.getAnswer()));
-                    win();
-                } else {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_WORD_FOR_PLAYER")));
-                    sendAll(String.format(getPhrase("GUESSING_WRONG_WORD_FOR_ALL"), activePlayer.getName(), userMessage));
-                    nextPlayer();
-                }
+                processWordGuessing(userMessage);
                 break;
             case PRIZE:
                 //ToDo команды в XML
-                if (userMessage.toLowerCase().equals("приз")) {
-                    sendAll("игрок выбрал приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из списка
-                    nextPlayer();
-                    break;
-                }
-                if (userMessage.toLowerCase().equals("деньги")) {
-                    sendAll("игрок выбрал деньги");
-                    activePlayer.addScore(100);
-                    nextPlayer();
-                    break;
-                }
-                if (userMessage.toLowerCase().equals("играем"))
-                {
-                    sendAll("игрок решил продолжить игру");
-                    activePlayerAnswerStatus = answerStatus.LETTER;
-                    currentPoints = 500;
-                    break;
-                }
-                sendAll("что то я вас не понял");
+                processPrize(userMessage);
                 break;
             case LETTEROPENING:
-                int letterIndex = 0;
-                try
-                {
-                    letterIndex = Integer.parseInt(userMessage);
-                    letterIndex--;
-                }
-                catch (NumberFormatException e)
-                {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_NOT_A_NUMBER")));
-                    break;
-                }
-                if (letterIndex>=currentWord.length()) {// здесь возможно >
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_TOO_BIG")));
-                    break;
-                }
-                if (currentWord.charAt(letterIndex)=='-')
-                {
-                    for (int i = 0; i < currentWord.length(); i++)
-                        if (question.getAnswer().charAt(i) == question.getAnswer().charAt(letterIndex))
-                            currentWord.replace(i, i + 1, Character.toString(question.getAnswer().charAt(letterIndex)));
-                    sendAll(currentWord.toString());
-                    if (currentWord.toString().toLowerCase().equals(question.getAnswer().toLowerCase()))
-                        win();
-                    activePlayerAnswerStatus = answerStatus.OTHER;
-                    break;
-                }
-                IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_ALREADY_OPENED")));
+                processLetterOpening(userMessage);
                 break;
             case OTHER:
-                if (userMessage.toLowerCase().equals("буква")) {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_LETTER")));
-                    activePlayerAnswerStatus = answerStatus.LETTER;
-                    wheelRoll();
-                    break;
-                }
-                if (userMessage.toLowerCase().equals("слово")) {
-                    IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_WORD")));
-                    activePlayerAnswerStatus = answerStatus.WORD;
-                    break;
-                }
-                IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
+                processOther(userMessage);
                 break;
 
 
@@ -255,6 +171,119 @@ public class GameFortune {
             return situation;
         }
     }
+
+    private void processLetterGuessing(String phrase)
+    {
+        if (phrase.length() > 1) {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("NOT_A_LETTER")));
+            return;
+        }
+        if (currentWord.indexOf(phrase) != -1) {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_THAT_ALREADY_WAS")));
+            return;
+        }
+        if (question.getAnswer().contains(phrase)) {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_A_LETTER_FOR_PLAYER")));
+            sendAllExceptActive(String.format(getPhrase("GUESSING_A_LETTER_FOR_ALL"), activePlayer.getName(), phrase));
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
+            activePlayer.addScore(currentPoints);
+            for (int i = 0; i < currentWord.length(); i++)
+                if (question.getAnswer().charAt(i) == phrase.charAt(0))
+                    currentWord.replace(i, i + 1, phrase);
+            sendAll(currentWord.toString());
+            if (currentWord.toString().toLowerCase().equals(question.getAnswer().toLowerCase()))
+                win();
+            activePlayerAnswerStatus = answerStatus.OTHER;
+            return;
+        }
+        IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_LETTER_FOR_PLAYER")));
+        sendAllExceptActive(String.format(getPhrase("GUESSING_WRONG_LETTER_FOR_ALL"), activePlayer.getName(), phrase));
+        nextPlayer();
+    }
+
+    private void processWordGuessing(String phrase)
+    {
+        if (phrase.equals(question.getAnswer())) {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_RIGHT_WORD_FOR_PLAYER")));
+            sendAllExceptActive(String.format(getPhrase("GUESSING_RIGHT_WORD_FOR_ALL"), activePlayer.getName(), question.getAnswer()));
+            win();
+        } else {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("GUESSING_WRONG_WORD_FOR_PLAYER")));
+            sendAllExceptActive(String.format(getPhrase("GUESSING_WRONG_WORD_FOR_ALL"), activePlayer.getName(), phrase));
+            nextPlayer();
+        }
+    }
+
+    private void processLetterOpening(String phrase)
+    {
+        int letterIndex = 0;
+        try
+        {
+            letterIndex = Integer.parseInt(phrase);
+            letterIndex--;
+        }
+        catch (NumberFormatException e)
+        {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_NOT_A_NUMBER")));
+            return;
+        }
+        if (letterIndex>=currentWord.length()) {// здесь возможно >
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_TOO_BIG")));
+            return;
+        }
+        if (currentWord.charAt(letterIndex)!='-') {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("LETTER_OPENING_ALREADY_OPENED")));
+            return;
+        }
+        for (int i = 0; i < currentWord.length(); i++) {
+            if (question.getAnswer().charAt(i) == question.getAnswer().charAt(letterIndex))
+                currentWord.replace(i, i + 1, Character.toString(question.getAnswer().charAt(letterIndex)));
+        }
+        sendAll(currentWord.toString());
+        if (currentWord.toString().toLowerCase().equals(question.getAnswer().toLowerCase()))
+            win();
+        activePlayerAnswerStatus = answerStatus.OTHER;
+    }
+
+    private void processOther(String phrase)
+    {
+        if (phrase.toLowerCase().equals("буква")) {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_LETTER")));
+            activePlayerAnswerStatus = answerStatus.LETTER;
+            wheelRoll();
+            return;
+        }
+        if (phrase.toLowerCase().equals("слово")) {
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_WORD")));
+            activePlayerAnswerStatus = answerStatus.WORD;
+            return;
+        }
+        IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
+    }
+
+    private void processPrize(String phrase)
+    {
+        if (phrase.toLowerCase().equals("приз")) {
+            sendAllExceptActive("игрок выбрал приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из списка
+            nextPlayer();
+            return;
+        }
+        if (phrase.equals("деньги")) {
+            sendAllExceptActive("игрок выбрал деньги");
+            activePlayer.addScore(100);
+            nextPlayer();
+            return;
+        }
+        if (phrase.equals("играем"))
+        {
+            sendAllExceptActive("игрок решил продолжить игру");
+            activePlayerAnswerStatus = answerStatus.LETTER;
+            currentPoints = 500;
+            return;
+        }
+        IOprocessor.sendMes(new Request(activePlayer, "что то я вас не понял"));
+    }
+
 
     enum answerStatus {LETTER, WORD, PRIZE, LETTEROPENING, OTHER}
     enum wheelSector {OPENLETTER, BANKRUPT, ZERO, PRIZE, POINTS}

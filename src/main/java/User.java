@@ -11,6 +11,7 @@ class User {
     @Getter
     private int score;
     @Getter
+    @Setter
     private String name;
     @Getter
     @Setter

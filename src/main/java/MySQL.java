@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class MySQL {
     private Connection connection;
 
-    //private static String selectUserString = "SELECT * FROM users WHERE userID=?";
     private static String updateString = "UPDATE users SET score=score+? WHERE userID=?";
     private static String dropReadyDateString = "UPDATE users SET lastReady=null, isInGame=0 WHERE userID=?";
     private static String insertNewPlayerString =  "INSERT INTO users VALUES (?, ?, ?, 0, null, 0, null)";
@@ -33,7 +32,6 @@ public class MySQL {
     public MySQL(String url, String user, String password) {
         try {
             connection = DriverManager.getConnection(url, user, password);
-            //selectUserCommand = connection.prepareStatement(selectUserString);
             updateCommand = connection.prepareStatement(updateString);
             dropReadyDateCommand = connection.prepareStatement(dropReadyDateString);
             insertNewPlayerCommand = connection.prepareStatement(insertNewPlayerString);
@@ -223,6 +221,20 @@ public class MySQL {
             default:
                 return User.Platform.CONSOLE;
         }
+    }
+    public String getUserName(int userID)
+    {
+        try {
+            selectUserCommand.setInt(1, userID);
+            ResultSet resultSet = selectUserCommand.executeQuery();
+            if(resultSet.next()) {
+                return resultSet.getString("username");
+            }
+            return "noname";
+        } catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        }
+        return "noname";//здесь возможно стоит бросать exception
     }
 
 }
