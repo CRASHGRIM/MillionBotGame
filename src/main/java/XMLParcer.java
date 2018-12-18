@@ -18,13 +18,7 @@ public class XMLParcer {
         SAXParser parser = factory.newSAXParser();
 
         XMLHandler handler = new XMLHandler();
-        //parser.parse(new File("src/TestMy.xml"), handler);
         parser.parse(new File(file), handler);
-        //for (ArrayList situations:phrases.values()){
-        //    for (Object word:situations)
-        //        System.out.println(word);
-        //}
-        //System.out.println(phrases.get("Sitting").get(0));
         return phrases;
     }
 

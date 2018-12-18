@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Commands_List>
+    <name>Game_Commands</name>
+    <Commands>
+        <Situation name="LETTER_GUESSING">
+            <phrase text="буква" />
+            <phrase text="букв" />
+            <phrase text="букву" />
+        </Situation>
+        <Situation name="WORD_GUESSING">
+            <phrase text="слово" />
+        </Situation>
+        <Situation name="PRIZE_CHOOSING">
+            <phrase text="приз" />
+            <phrase text="беру приз" />
+        </Situation>
+        <Situation name="MONEY_CHOOSING">
+            <phrase text="деньги" />
+            <phrase text="беру деньги" />
+        </Situation>
+        <Situation name="GAME_CONTINUE_CHOOSING">
+            <phrase text="продолжаем" />
+            <phrase text="играем" />
+            <phrase text="играю" />
+            <phrase text="далее" />
+        </Situation>
+    </Commands>
+</Commands_List>

@@ -4,19 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainProcessor {
-    //ToDO вынести в класс DaTa всё, что относиттся к состоянию игры
     private IOMultiplatformProcessor ioMultiplatformProcessor = new IOMultiplatformProcessor();
     private LocalDataBase localDataBase = new LocalDataBase(ioMultiplatformProcessor);
     private MySQL dataBase = new MySQL(Config.databaseURL, Config.databaseUser, Config.databasePassword);
     private RegistartionProcessor registartionProcessor = new RegistartionProcessor(ioMultiplatformProcessor, localDataBase, dataBase);
     private MenuProcessor menuProcessor = new MenuProcessor(ioMultiplatformProcessor, this);
-    private ArrayList<GameFortune> games = new ArrayList<GameFortune>();
     @Getter
     private MatchMakingProcessor matchMakingProcessor = new MatchMakingProcessor(ioMultiplatformProcessor, dataBase);
 
     public void start() {
         while (true) {
-            //ToDo перенести в добавление пользователя
             if (ioMultiplatformProcessor.isHasUnprocessedRequests()) {
                 Request request = ioMultiplatformProcessor.pollRequest();
                 if (!dataBase.checkRegister(request.getUserID()))//Незарегистрированный
@@ -49,7 +46,8 @@ public class MainProcessor {
                     {
                         ioMultiplatformProcessor.sendMes(new Request(usersInGame.get(i), "игра закончилась"));
                         dataBase.userLeavesGame(usersInGame.get(i));
-                    }//TODO тут еще надо апдейтнуть юзера который выиграл
+                    }
+                    dataBase.increaseUserScore(matchMakingProcessor.getLobbiesDict().get(gameIndex).getActivePlayer());
                     matchMakingProcessor.getLobbiesDict().remove(gameIndex);
                 }
 

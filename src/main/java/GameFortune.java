@@ -5,6 +5,7 @@ import java.util.*;
 
 public class GameFortune {
 
+    @Getter
     private User activePlayer;
     private int activePlayerIndex;
     private ArrayList<User> players;
@@ -22,6 +23,7 @@ public class GameFortune {
     @Getter
     private boolean isGameFinished = false;
     private Map<String, ArrayList<String>> phrases;
+    private Map<String, ArrayList<String>> userCommands;
     private int currentPoints;
 
     GameFortune(ArrayList<User> players, IOMultiplatformProcessor ioProcessor) {
@@ -39,6 +41,7 @@ public class GameFortune {
         techComm = new TechnicalCommands(this);
         try {
             phrases = XMLParcer.parse("src/main/texts/TestMy.xml");
+            userCommands = XMLParcer.parse("src/main/texts/GameCommands.xml");
         }
         catch (Exception e){
             e.printStackTrace();
@@ -104,7 +107,6 @@ public class GameFortune {
                 processWordGuessing(userMessage);
                 break;
             case PRIZE:
-                //ToDo команды в XML
                 processPrize(userMessage);
                 break;
             case LETTEROPENING:
@@ -169,6 +171,19 @@ public class GameFortune {
         catch (Exception e)
         {
             return situation;
+        }
+    }
+
+    private boolean checkPhrase(String situation, String input)
+    {
+        try {
+            if (phrases.get(situation).contains(input))
+                return true;
+            return false;
+        }
+        catch (Exception e)
+        {
+            return false;
         }
     }
 
@@ -247,13 +262,13 @@ public class GameFortune {
 
     private void processOther(String phrase)
     {
-        if (phrase.toLowerCase().equals("буква")) {
+        if (checkPhrase("LETTER_GUESSING", phrase.toLowerCase())) {
             IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_LETTER")));
             activePlayerAnswerStatus = answerStatus.LETTER;
             wheelRoll();
             return;
         }
-        if (phrase.toLowerCase().equals("слово")) {
+        if (checkPhrase("WORD_GUESSING", phrase.toLowerCase())) {
             IOprocessor.sendMes(new Request(activePlayer, getPhrase("NAME_A_WORD")));
             activePlayerAnswerStatus = answerStatus.WORD;
             return;
@@ -263,18 +278,18 @@ public class GameFortune {
 
     private void processPrize(String phrase)
     {
-        if (phrase.toLowerCase().equals("приз")) {
+        if (checkPhrase("PRIZE_CHOOSING", phrase.toLowerCase())) {
             sendAllExceptActive("игрок выбрал приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из списка
             nextPlayer();
             return;
         }
-        if (phrase.equals("деньги")) {
+        if (checkPhrase("MONEY_CHOOSING", phrase.toLowerCase())) {
             sendAllExceptActive("игрок выбрал деньги");
             activePlayer.addScore(100);
             nextPlayer();
             return;
         }
-        if (phrase.equals("играем"))
+        if (checkPhrase("GAME_CONTINUE_CHOOSING", phrase.toLowerCase()))
         {
             sendAllExceptActive("игрок решил продолжить игру");
             activePlayerAnswerStatus = answerStatus.LETTER;

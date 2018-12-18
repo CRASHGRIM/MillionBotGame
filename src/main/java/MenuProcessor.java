@@ -5,12 +5,6 @@ import java.util.LinkedList;
 
 public class MenuProcessor {
     private IOMultiplatformProcessor ioMultiplatformProcessor;
-    private ArrayList<User> unitedLobby;
-    private LocalDataBase localDataBase;
-    private MySQL dataBase;
-    private LinkedList<User> userQueue;
-    private HashMap<Integer, GameFortune> lobbiesDict;
-    private int currentgameIndex;
     private MainProcessor mainProcessor;
 
     public MenuProcessor(IOMultiplatformProcessor ioMultiplatformProcessor, MainProcessor mainProcessor) {

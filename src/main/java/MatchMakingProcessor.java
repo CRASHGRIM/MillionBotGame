@@ -30,8 +30,6 @@ public class MatchMakingProcessor {
                 return;
         }
         userQueue.add(user);
-       // dataBase.refreshReady(user.getId());
-        //userQueue.add(user);//надо проверить что юзер уже в очереди
         //userQueue.element() //здесь надо проверить первого юзера на то что он слишком долго в очереди
         if (userQueue.size()>=Config.USERS_IN_LOBBY)
         {

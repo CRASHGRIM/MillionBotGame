@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class MySQL {
     private Connection connection;
 
-    private static String updateString = "UPDATE users SET score=score+? WHERE userID=?";
+    private static String increaseUserScoreString = "UPDATE users SET score=score+? WHERE userID=?";
     private static String dropReadyDateString = "UPDATE users SET lastReady=null, isInGame=0 WHERE userID=?";
     private static String insertNewPlayerString =  "INSERT INTO users VALUES (?, ?, ?, 0, null, 0, null)";
     private static String checkRegisterString =  "SELECT * FROM users WHERE userID=?";
@@ -16,7 +16,7 @@ public class MySQL {
     private static String userSetGameString =  "UPDATE users SET gameIndex=? WHERE userID=?";
     private static String selectUsersInGameString =  "SELECT * FROM users WHERE gameIndex=?";
 
-    private static PreparedStatement updateCommand;
+    private static PreparedStatement increaseUserScoreCommand;
     private static PreparedStatement dropReadyDateCommand;
     private static PreparedStatement insertNewPlayerCommand;
     private static PreparedStatement checkRegisterCommand;
@@ -32,7 +32,7 @@ public class MySQL {
     public MySQL(String url, String user, String password) {
         try {
             connection = DriverManager.getConnection(url, user, password);
-            updateCommand = connection.prepareStatement(updateString);
+            increaseUserScoreCommand = connection.prepareStatement(increaseUserScoreString);
             dropReadyDateCommand = connection.prepareStatement(dropReadyDateString);
             insertNewPlayerCommand = connection.prepareStatement(insertNewPlayerString);
             checkRegisterCommand = connection.prepareStatement(checkRegisterString);
@@ -48,11 +48,11 @@ public class MySQL {
 
     }
 
-    public void updatePlayer(User user) {
+    public void increaseUserScore(User user) {
         try {
-            updateCommand.setInt(1, user.getScore());
-            updateCommand.setInt(2, user.getId());
-            updateCommand.executeUpdate();
+            increaseUserScoreCommand.setInt(1, user.getScore());
+            increaseUserScoreCommand.setInt(2, user.getId());
+            increaseUserScoreCommand.executeUpdate();
         }
         catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
@@ -120,16 +120,17 @@ public class MySQL {
             if(resultSet.next()) {
                 User.Platform enumPlatform;
                 String platform = resultSet.getString("platform");
-                switch (platform){
-                    case Config.databaseConsoleTag:
-                        enumPlatform = User.Platform.CONSOLE;
-                    case Config.databaseVKTag:
-                        enumPlatform = User.Platform.VK;
-                    case Config.databaseTelegramTag:
-                        enumPlatform = User.Platform.TELEGRAM;// возможно вынесу в отдельный метод
-                        default:
-                            enumPlatform = User.Platform.CONSOLE;
-                }
+                enumPlatform = SQLEnumToJavaEnum(platform);
+                //switch (platform){
+                //    case Config.databaseConsoleTag:
+                //        enumPlatform = User.Platform.CONSOLE;
+                //    case Config.databaseVKTag:
+                //        enumPlatform = User.Platform.VK;
+                //    case Config.databaseTelegramTag:
+                //        enumPlatform = User.Platform.TELEGRAM;// возможно вынесу в отдельный метод
+                //        default:
+                //            enumPlatform = User.Platform.CONSOLE;
+                //}
                 String userName = resultSet.getString("username");
                 return new User(enumPlatform, userID, userName);
             }
