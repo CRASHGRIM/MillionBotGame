@@ -5,7 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
-class VkIO {
+class VkIO implements IOInterface{
     private static Group group = new Group(Config.VK_GROUD_ID, FileUtils.readToken(Config.FILE_NAME_VK_TOKEN));
     private final User.Platform platform = User.Platform.VK;
 
@@ -18,9 +18,8 @@ class VkIO {
                 this.IOMultiplatformProcessor.pushRequest(new Request(new User(platform, message.authorId()), message.getText()))
         );
     }
-
-    void sendMessage(int id, String message) {
-        new Message()
+    public void sendMessage(int id, String message) {
+            new Message()
                 .from(group)
                 .to(id)
                 .text(message)

@@ -121,16 +121,6 @@ public class MySQL {
                 User.Platform enumPlatform;
                 String platform = resultSet.getString("platform");
                 enumPlatform = SQLEnumToJavaEnum(platform);
-                //switch (platform){
-                //    case Config.databaseConsoleTag:
-                //        enumPlatform = User.Platform.CONSOLE;
-                //    case Config.databaseVKTag:
-                //        enumPlatform = User.Platform.VK;
-                //    case Config.databaseTelegramTag:
-                //        enumPlatform = User.Platform.TELEGRAM;// возможно вынесу в отдельный метод
-                //        default:
-                //            enumPlatform = User.Platform.CONSOLE;
-                //}
                 String userName = resultSet.getString("username");
                 return new User(enumPlatform, userID, userName);
             }

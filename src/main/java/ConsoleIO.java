@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class ConsoleIO extends Thread {
+public class ConsoleIO extends Thread implements IOInterface{
 
     private IOMultiplatformProcessor IOMultiplatformProcessor;
 
@@ -15,7 +15,8 @@ public class ConsoleIO extends Thread {
         }
     }
 
-    void sendMes(String message) {
+    @Override
+    public void sendMessage(int userID, String message) {
         System.out.println(message);
     }
 }

@@ -49,11 +49,10 @@ public class IOMultiplatformProcessor {
     }
 
     void sendMes(User user, String message) {
-        //ToDo общий интерфейс (map)
         switch (user.getPlatform()) {
             case CONSOLE:
                 if (Config.IS_CONSOLE_RUN)
-                    consoleIO.sendMes(message);
+                    consoleIO.sendMessage(0, message);
                 break;
             case VK:
                 if (Config.IS_VK_RUN)
@@ -61,7 +60,7 @@ public class IOMultiplatformProcessor {
                 break;
             case TELEGRAM:
                 if (Config.IS_TG_RUN)
-                    telegramIO.sendMsg(message, user.getId());
+                    telegramIO.sendMessage(user.getId(), message);
         }
     }
 }

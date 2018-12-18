@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
-public class TelegramIO extends TelegramLongPollingBot {
+public class TelegramIO extends TelegramLongPollingBot implements IOInterface{
 
     private IOMultiplatformProcessor ioMultiplatformProcessor;
 
@@ -20,10 +20,10 @@ public class TelegramIO extends TelegramLongPollingBot {
         Message message = update.getMessage();
         ioMultiplatformProcessor.pushRequest(new Request(new User(User.Platform.TELEGRAM, userID), message.getText()));
     }
-
-    void sendMsg(String s, long chatID) {
+    @Override
+    public void sendMessage(int chatID, String s) {
         try {
-            execute(new SendMessage().setChatId(chatID).setText(s).enableMarkdown(false));
+            execute(new SendMessage().setChatId((long) chatID).setText(s).enableMarkdown(false));
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
