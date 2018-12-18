@@ -87,5 +87,55 @@
             <phrase text="да эта буква уже открыта" />
             <phrase text="а такая буква уже есть" />
         </Situation>
+        <Situation name="NEXT_PLAYER_FOR_ALL">
+            <phrase text="в игру вступает %1$s" />
+            <phrase text="%1$s начинает игру" />
+        </Situation>
+        <Situation name="PRIZE_PRIZE_FOR_ACTIVE">
+            <phrase text="вы выиграли %1$s очков " />
+        </Situation>
+        <Situation name="PRIZE_PRIZE_FOR_ALL">
+            <phrase text="%1$s выиграл %2$s очков" />
+        </Situation>
+        <Situation name="PRIZE_MONEY_FOR_ACTIVE">
+            <phrase text="вот вам баллы от нас " />
+        </Situation>
+        <Situation name="PRIZE_MONEY_FOR_ALL">
+            <phrase text="%1$s выбрал деньги" />
+        </Situation>
+        <Situation name="PRIZE_LETTER_FOR_ACTIVE">
+            <phrase text="гмм ну ладно называйте букву " />
+        </Situation>
+        <Situation name="PRIZE_LETTER_FOR_ALL">
+            <phrase text="%1$s продолжает игру" />
+        </Situation>
+        <Situation name="PRIZE_WRONG_INPUT">
+            <phrase text="что то я не понял вас" />
+        </Situation>
     </Situations>
+    <Wheel_Sector>
+        <Situation name="ZERO">
+            <phrase text="ноль на барабане, следующий игрок" />
+        </Situation>
+        <Situation name="PRIZE">
+            <phrase text="сектор приз на барабане" />
+        </Situation>
+        <Situation name="PRIZE_FOR_ACTIVE">
+            <phrase text="приз, деньги, играем?" />
+        </Situation>
+        <Situation name="PLUS">
+            <phrase text="сектор плюс на барабане" />
+        </Situation>
+        <Situation name="PLUS_FOR_ACTIVE">
+            <phrase text="назовите индекс буквы которую открыть" />
+            <phrase text="какую букву открываем?" />
+        </Situation>
+        <Situation name="BANKRUPT">
+            <phrase text="а вы банкрот" />
+        </Situation>
+        <Situation name="POINTS">
+            <phrase text="%1$s очков на барабане" />
+            <phrase text="у вас %1$s очков" />
+        </Situation>
+    </Wheel_Sector>
 </MillionGamePhrases>

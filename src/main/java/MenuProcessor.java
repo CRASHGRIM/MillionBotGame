@@ -16,7 +16,7 @@ public class MenuProcessor {
         switch (request.getMessage().toLowerCase()) {
             case "!start":
                 ioMultiplatformProcessor.sendMes(request.getUser(), "Вы в очереди. Ожидайте.");
-                mainProcessor.getMatchMakingProcessor().addUserToLobby(request.getUser());//TODO сделать проверку что уже в лобби
+                mainProcessor.getMatchMakingProcessor().addUserToLobby(request.getUser());
                 break;
             default:
                 ioMultiplatformProcessor.sendMes(request.getUser(), "Неправильная команда.");

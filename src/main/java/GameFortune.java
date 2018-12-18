@@ -67,7 +67,7 @@ public class GameFortune {
         sendAll(getPhrase("TASK_IS:"));
         sendAll(question.getQuestion());
         sendAll(currentWord.toString());
-        sendAll(activePlayer.getName() + getPhrase("PLAYER_BEGINS_THE_ROUND"));
+        sendAllExceptActive(activePlayer.getName() + getPhrase("PLAYER_BEGINS_THE_ROUND"));
         IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
     }
 
@@ -92,7 +92,7 @@ public class GameFortune {
             if (techComm.listOfCommands.containsKey(userMessage))
                 techComm.listOfCommands.get(userMessage).execute(request.getUser());
             else
-                IOprocessor.sendMes(new Request(request.getUser(), "команда отсутствует"));
+                IOprocessor.sendMes(new Request(request.getUser(), "no such command"));
             return;
         }
         if (request.getUserID()!=activePlayer.getId())
@@ -124,13 +124,13 @@ public class GameFortune {
         activePlayerIndex = (activePlayerIndex+ 1) % players.size();
         activePlayer = players.get(activePlayerIndex);
         activePlayerAnswerStatus = answerStatus.OTHER;
-        sendAll("В игру вступает " + activePlayer.getName());
+        sendAll(String.format(getPhrase("NEXT_PLAYER_FOR_ALL"), activePlayer.getName()));
         IOprocessor.sendMes(new Request(activePlayer, getPhrase("GAME_RULES")));
     }
 
     private void win() {
         IOprocessor.sendMes(new Request(activePlayer, getPhrase("VICTORY_FOR_PLAYER")));
-        sendAll(String.format(getPhrase("VICTORY_FOR_ALL"), activePlayer.getName()));
+        sendAllExceptActive(String.format(getPhrase("VICTORY_FOR_ALL"), activePlayer.getName()));
         isGameFinished = true;
     }
 
@@ -138,27 +138,27 @@ public class GameFortune {
         wheelSector sector = wheel.get(rnd.nextInt(wheel.size()));
         switch (sector){
             case ZERO:
-                sendAll("ноль на барабане, следующий игрок");
+                sendAll(getPhrase("ZERO"));
                 nextPlayer();
                 break;
             case PRIZE:
-                sendAll("сектор приз на барабане");
-                IOprocessor.sendMes(new Request(activePlayer, "приз, деньги, играем?"));
+                sendAll(getPhrase("PRIZE"));
+                IOprocessor.sendMes(new Request(activePlayer, getPhrase("PRIZE_FOR_ACTIVE")));
                 activePlayerAnswerStatus = answerStatus.PRIZE;
                 break;
             case OPENLETTER:
-                sendAll("сектор плюс на барабане");
-                sendAll("скажите номер буквы которую хотите открыть");
+                sendAll(getPhrase("PLUS"));
+                IOprocessor.sendMes(new Request(activePlayer, getPhrase("PLUS_FOR_ACTIVE")));
                 activePlayerAnswerStatus = answerStatus.LETTEROPENING;
                 break;
             case BANKRUPT:
-                sendAll("а вы банкрот");
+                sendAll(getPhrase("BANKRUPT"));
                 activePlayer.bankrupt();
                 nextPlayer();
                 break;
             case POINTS:
                 currentPoints = (rnd.nextInt(5)+1)*100;
-                sendAll("points "+currentPoints);
+                sendAll(String.format(getPhrase("POINTS"), currentPoints));
                 break;
         }
     }
@@ -279,24 +279,29 @@ public class GameFortune {
     private void processPrize(String phrase)
     {
         if (checkPhrase("PRIZE_CHOOSING", phrase.toLowerCase())) {
-            sendAllExceptActive("игрок выбрал приз");// здесь надо сделать чтобы был выбор приз или деньги и подгружать призы из списка
+            int prizeScore = rnd.nextInt(20)*10;
+            sendAllExceptActive(String.format(getPhrase("PRIZE_PRIZE_FOR_ALL"), activePlayer.getName(), prizeScore));
+            IOprocessor.sendMes(new Request(activePlayer, String.format(getPhrase("PRIZE_PRIZE_FOR_ACTIVE"), prizeScore)));
+            activePlayer.addScore(prizeScore);
             nextPlayer();
             return;
         }
         if (checkPhrase("MONEY_CHOOSING", phrase.toLowerCase())) {
-            sendAllExceptActive("игрок выбрал деньги");
+            sendAllExceptActive(String.format(getPhrase("PRIZE_MONEY_FOR_ALL"), activePlayer.getName()));
             activePlayer.addScore(100);
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("PRIZE_MONEY_FOR_ACTIVE")+"100"));
             nextPlayer();
             return;
         }
         if (checkPhrase("GAME_CONTINUE_CHOOSING", phrase.toLowerCase()))
         {
-            sendAllExceptActive("игрок решил продолжить игру");
+            sendAllExceptActive(String.format(getPhrase("PRIZE_LETTER_FOR_ALL"), activePlayer.getName()));
+            IOprocessor.sendMes(new Request(activePlayer, getPhrase("PRIZE_LETTER_FOR_ACTIVE")));
             activePlayerAnswerStatus = answerStatus.LETTER;
             currentPoints = 500;
             return;
         }
-        IOprocessor.sendMes(new Request(activePlayer, "что то я вас не понял"));
+        IOprocessor.sendMes(new Request(activePlayer, getPhrase("PRIZE_WRONG_INPUT")));
     }
 
 
