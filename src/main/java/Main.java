@@ -8,6 +8,6 @@ public class Main {
         catch (Exception e) {
             e.printStackTrace();
         }
-        //Я люблю пингвинов
+        //Я не люблю пингвинов
     }
 }
