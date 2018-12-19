@@ -6,7 +6,7 @@ public class MySQL {
     private Connection connection;
 
     private static String increaseUserScoreString = "UPDATE users SET score=score+? WHERE userID=?";
-    private static String dropReadyDateString = "UPDATE users SET lastReady=null, isInGame=0 WHERE userID=?";
+    private static String dropReadyDateString = "UPDATE users SET lastReady=null, isInGame=0, gameIndex=null WHERE userID=?";
     private static String insertNewPlayerString =  "INSERT INTO users VALUES (?, ?, ?, 0, null, 0, null)";
     private static String checkRegisterString =  "SELECT * FROM users WHERE userID=?";
     private static String userInGameString =  "UPDATE users SET isInGame=1 WHERE userID=?";
